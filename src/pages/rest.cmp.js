@@ -8,13 +8,6 @@ function LoadingTpl(){
     return <p>Loading!</p>
 };
 
-function InputTpl(props){
-    return <div>
-        <input type="text" onChange={(ev) => { props.setState({input: ev.target.value}); props.onInputChange(ev.target.value)}} value={props.state.input} /> 
-        Selected: {props.state.input}
-    </div>
-}
-
 function ListUsers(props){
 
     let list = [];
@@ -46,18 +39,22 @@ function ListTodos(props){
 
     let list = [];
 
-    for (const todo of props.todos) {
+    for (let i = 0; i<props.todos.length; i++) {
+        let todo = props.todos[i];
         //console.log(post)
-        list.push(<li key={todo.id}>
-            <p>
-                <input type="checkbox" disabled { todo.completed ? 'checked' : '' }></input>
-                { todo.title }
-            </p>
-        </li>)
+        list.push(
+            <li key={todo.id}>
+                <p>
+                    <input type="checkbox" defaultChecked={ todo.completed ? true : false } onChange={(ev)=>props.handleCheckboxEv(ev, i, props.todos) }></input>
+                    { todo.title }
+                </p>
+            </li>
+        )
     }
 
     return list;
 }
+
 
 export default class RestComponent extends Component {
     
@@ -69,10 +66,33 @@ export default class RestComponent extends Component {
 
         var vm = this;
 
+        function handleCheckboxEv(ev, i, todos){
+            console.log(ev.target.checked);
+            console.log(i);
+            todos[i].completed = ev.target.checked;
+            console.log(todos);
+        }
 
-        function request(method, params){
+        function saveState(service){
+            let baseUrl = 'https://jsonplaceholder.typicode.com/'+service;
+            let url = baseUrl;
+            let body = JSON.stringify(vm.requestList);
             
-            let baseUrl = 'https://jsonplaceholder.typicode.com/'+method;
+            fetch(url, {method: 'PUT', body: body})
+                .then(rawResponse => rawResponse.json())
+                .then(response => {
+                    console.log('REQUEST: ' + url , {Response: response});
+                    vm.setState(() => {        //To use the previous state, we don't pass an object as argument of setState(). Instead, we use a function whose argument is the previous state
+                        return {
+                            isLoading: false
+                        };
+                    })
+                });
+        }
+
+        function request(service, params){
+            
+            let baseUrl = 'https://jsonplaceholder.typicode.com/'+service;
             let url = baseUrl + (params ? '?' : '');
             if (params){
                 for (const paramName in params) {
@@ -86,15 +106,21 @@ export default class RestComponent extends Component {
             
             fetch(url)
                 .then(rawResponse => rawResponse.json())
-                .then(response => {
-                    console.log('REQUEST: ' + url , {Response: response});
-                    vm.requestList = response;
-                    vm.setState(() => {        //To use the previous state, we don't pass an object as argument of setState(). Instead, we use a function whose argument is the previous state
-                        return {
-                            isLoading: false
-                        };
-                    })
-                });
+                .then(
+                    response => {
+                        console.log('REQUEST: ' + url , {Response: response});
+                        vm.requestList = response;
+                        vm.requestOriginal = JSON.parse(JSON.stringify( response ));;
+                        vm.setState(() => {        //To use the previous state, we don't pass an object as argument of setState(). Instead, we use a function whose argument is the previous state
+                            return {
+                                isLoading: false
+                            };
+                        })
+                    },
+                    error => {
+                        console.log('REQUEST FAILED', error)
+                    }
+                );
         }
 
         if(vm.requestList == undefined) {
@@ -114,6 +140,13 @@ export default class RestComponent extends Component {
 
         vm.onInputChange = function (value, method){
             request(method, {userId: value})
+        }
+
+        vm.seeChecked = function(){
+            console.log('LIST: ', vm.requestList)
+        }
+        vm.seeOriginal = function(){
+            console.log('ORIGINAL LIST: ', vm.requestOriginal)
         }
 
         return(
@@ -154,7 +187,12 @@ export default class RestComponent extends Component {
                                     User: <input type="text" onChange={(ev) => { vm.setState({input: ev.target.value}); vm.onInputChange(ev.target.value, 'todos')}} value={vm.state.input} /> Selected: {vm.state.input}
                                     <br/>
                                     { vm.requestList.length > 0 ? (
-                                        <ListPosts posts={vm.requestList} />
+                                        <div>
+                                            <ListTodos todos={vm.requestList} function handleCheckboxEv={handleCheckboxEv} />
+                                            <button onClick={()=> vm.seeChecked()}>SEE</button>
+                                            <button onClick={()=> vm.seeOriginal()}>SEE ORIGINAL</button>
+                                            <button onClick={()=> saveState('todos')}>SAVE</button>
+                                        </div>
                                     ) : (
                                         <p>No posts found for the user ID { vm.state.input }</p>
                                     )}

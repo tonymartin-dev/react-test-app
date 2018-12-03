@@ -7,6 +7,7 @@ import HeaderComponent      from './common/header.cmp'
 import HomeComponent        from './pages/home.cmp';
 import PlayerComponent      from './pages/player.cmp';
 import RestComponent        from './pages/rest.cmp'
+import BlogComponent        from './pages/blog.cmp'
 import FooterComponent      from './common/footer.cmp'
 
 //Local imports
@@ -27,6 +28,7 @@ export default class App extends Component {
                     <Route path="/player" component={ PlayerComponent }/>
                     <Route path="/function" render={ () => (<h1>Function instead of component</h1>) }/>
                     <Route path="/rest" component={ RestComponent }/>
+                    <Route path="/blog" component={ BlogComponent }/>
                 </div>
 
                 <FooterComponent />

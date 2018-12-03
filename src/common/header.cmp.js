@@ -18,6 +18,9 @@ function HeaderComponent(){
                     <li className="nav-item">
                         <Link to="/rest" className="nav-link">Rest</Link>
                     </li>
+                    <li className="nav-item">
+                        <Link to="/blog" className="nav-link">Blog</Link>
+                    </li>
                 </ul>
             </div>
         </nav>

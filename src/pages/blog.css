@@ -1,0 +1,32 @@
+ul{
+    list-style-type: none;
+    width: 85%;
+    max-width: 900px;
+    margin: auto;
+    text-align: left;
+}
+
+li p.bottom{
+    padding-bottom: 20px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1)
+}
+
+.edit-post{
+    cursor: pointer;
+}
+
+.edit-post:hover{
+    text-decoration: underline !important;
+    font-weight: bold;
+}
+
+textarea{
+    width: 100%;
+}
+textarea.title-edit{
+    height: 2rem;
+    font-weight: bold;
+}
+textarea.body-edit{
+    height: 5rem;
+}
