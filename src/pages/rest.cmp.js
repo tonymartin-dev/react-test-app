@@ -123,7 +123,7 @@ export default class RestComponent extends Component {
                 );
         }
 
-        if(vm.requestList == undefined) {
+        if(vm.requestList === undefined) {
             request(vm.selectedItem)
         }
 
@@ -163,13 +163,13 @@ export default class RestComponent extends Component {
                         <button className="btn" onClick={()=>vm.selectItem('todos')}>TODOS</button>
 
                         <ol style={{listStyle: 'none'}}>
-                            { vm.selectedItem == 'users' ? (
+                            { vm.selectedItem === 'users' ? (
                                 <div>
                                     <h3>Users</h3>
                                     <ListUsers users={vm.requestList} field="name" />
                                 </div>
                             ):(null) }
-                            { vm.selectedItem == 'posts' ? (
+                            { vm.selectedItem === 'posts' ? (
                                 <div>
                                     <h3>Posts</h3>
                                     User: <input type="text" onChange={(ev) => { vm.setState({input: ev.target.value}); vm.onInputChange(ev.target.value, 'posts')}} value={vm.state.input} /> Selected: {vm.state.input}
@@ -181,7 +181,7 @@ export default class RestComponent extends Component {
                                     )}
                                 </div>
                             ):(null)}
-                            { vm.selectedItem == 'todos' ? (
+                            { vm.selectedItem === 'todos' ? (
                                 <div>
                                     <h3>Posts</h3>
                                     User: <input type="text" onChange={(ev) => { vm.setState({input: ev.target.value}); vm.onInputChange(ev.target.value, 'todos')}} value={vm.state.input} /> Selected: {vm.state.input}

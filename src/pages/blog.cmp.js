@@ -24,28 +24,29 @@ function ListPosts(props){
         }
         list.push(<li key={post.id}>
             
-            {props.state.editPost == post.id ? (
-                <textarea className="title-edit" id={editId.title} defaultValue={ post.title }></textarea>
+            {props.state.editPost === post.id ? (
+                <input className="title-edit" id={editId.title} defaultValue={ post.title } placeholder="Title"></input>
             ) : (
                 <h4>{ post.title }</h4>
             )}
-            {props.state.editPost == post.id ? (
-                <textarea className="body-edit" id={editId.body} defaultValue={ post.body }></textarea>
+            {props.state.editPost === post.id ? (
+                <textarea className="body-edit" id={editId.body} defaultValue={ post.body } placeholder="Message"></textarea>
             ) : (
                 <p>{ post.body }</p>
             )}
-            <p className="bottom">
-                <span>User Id: { post.userId } - </span>
-                {props.state.editPost != post.id ?(
-                    <a className="edit-post" onClick={() => props.postAPI.edit(post.id, editId)}>Edit</a>
+            <div className="post-footer">
+                <span><strong>Author:</strong> { post.user }</span>
+                {props.state.editPost !== post.id ?(
+                    <div className="btn-group">
+                        <button className="edit-post btn" onClick={() => props.postAPI.edit(post.id, editId)}>Edit</button>
+                    </div>
                 ):(
-                    <span> 
-                        <a className="edit-post" onClick={() => props.postAPI.save({id: post.id, user: post.userId}, editId)}>Save</a>
-                        -
-                        <a className="edit-post" onClick={() => props.postAPI.cancel(post.id, editId)}>Cancel</a>
-                    </span>
+                    <div className="btn-group">
+                        <button className="edit-post btn btn-success" onClick={() => props.postAPI.save({id: post.id, user: post.userId}, editId)}> Save </button>
+                        <button className="edit-post btn btn-secondary" onClick={() => props.postAPI.cancel(post.id, editId)}> Cancel </button>
+                    </div>
                 )}
-            </p>
+            </div>
 
         </li>)
     }
@@ -60,43 +61,17 @@ export default class RestComponent extends Component {
 
         super(props);
         var vm =this;
-
+        
         vm.state = { 
             isLoading: false, 
             editPost: null,
             userList: []
         };
 
-        
-        users.getUsers().then(
-            res => {
-                let users = [];
-                res.forEach(user => {
-                    users.push({
-                        name: user.name,
-                        value: user.id
-                    })
-                });
-                vm.setState(()=>{return{userList: users}})
-            }
-        ) 
+        console.log('[COMPONENT LOADED]: BLOG', {state: vm.state})
 
         
-    }
-
-    postList = [];
-
-    
-    render() {
-        
-        var vm = this;
-
-        console.log('blog')
-        console.log(vm.state);
-        console.log('USERS NAMES: ', users.userName(1));
-
-
-        function getPosts(params){
+        vm.getPosts = function(params){
             vm.setState(() => {
                 return {isLoading: true}
             });
@@ -110,20 +85,47 @@ export default class RestComponent extends Component {
             }
             http.request(url, config).then(
                 res => {
-                    console.log('Yuhu!', res);
                     vm.postList = res;
+                    vm.postList.forEach(function(post){
+                        post.user = users.userName(post.userId, vm.usersInfo).name
+                    })
                     vm.setState(() => {
                         return {isLoading: false}
                     });
                 },
-                err => {
-                    console.log('D\'oh!', err);
+                () => {
                     vm.setState(() => {
                         return {isLoading: false}
-                    });                }
+                    });
+                }
             );
 
         }
+
+        users.getUsers().then(
+            res => {
+                vm.usersInfo = res;
+                let users = [];
+                res.forEach(user => {
+                    users.push({
+                        name: user.name,
+                        value: user.id
+                    });
+                });
+                vm.setState(()=>{return{userList: users}})
+                vm.getPosts();
+            }
+        )
+        
+    }
+
+    postList = [];
+
+    
+    render() {
+        
+        var vm = this;
+
 
         function editPost(postId){
             vm.setState(() => {
@@ -151,6 +153,11 @@ export default class RestComponent extends Component {
                 body:   document.getElementById(element.body).defaultValue
             }
 
+            if(edited.title.length === 0 || edited.body.length === 0){
+                alert('Please, insert a title and a body for your post.')
+                return;
+            }
+
             if(edited.title === original.title && edited.body === original.body){
                 alert('No changes detected');
                 return;
@@ -176,7 +183,7 @@ export default class RestComponent extends Component {
 
                     for (let i = 0; i < vm.postList.length; i++) {
                         let element = vm.postList[i];
-                        if(element.id == post.id){
+                        if(element.id === post.id){
 
                             element.title = res.title;
                             element.body = res.body;
@@ -194,7 +201,7 @@ export default class RestComponent extends Component {
                     
 
                 },
-                err => {
+                () => {
 
                     alert('Error saving your post. Please, try it again later.')
                     vm.setState(() => {
@@ -212,28 +219,83 @@ export default class RestComponent extends Component {
             cancel: cancelPostEdit
         }
 
-        function getPostsFiltered(){
-            let selectedUserId = document.getElementById('post-user-id').value;
-            console.log('Getting post from user #', selectedUserId);
-            getPosts({userId: selectedUserId})
+        function createPost(){
+
+            let config = {
+                service: 'posts',
+                method:  'POST',
+                body:{
+                    title:  document.getElementById('new-post-title').value,
+                    body:   document.getElementById('new-post-body').value,
+                    userId: document.getElementById('new-post-user-id').value
+                }
+            }
+
+            console.log('Creating post: ', {data: config.body});
+            
+            vm.setState({createPost: true})
+
+            http.request('https://jsonplaceholder.typicode.com/', config).then(
+                res => {
+                    let newPost = res;
+                    newPost.user = users.userName(config.body.userId, vm.usersInfo).name;
+                    newPost.id = vm.postList.length +1;
+                    vm.postList.push(newPost);
+                    vm.setState({createPost: false});
+                    console.log('[POSTS UPDATED]', vm.postList);
+                }
+            )
+
         }
 
-        
+        function getPostsFiltered(){
+            let selectedUserId = document.getElementById('post-user-id').value;
+            console.log('Getting post from user #'+ selectedUserId);
+            if(selectedUserId !== 'All'){
+                vm.getPosts({userId: selectedUserId})
+            } else {
+                vm.getPosts()
+            }
+        }
 
         return <div id="Blog">
             
             <LoaderComponent loading={this.state.isLoading} />
             <h1>Bl-cmp</h1>
-            <span>Filter by userID: </span>
-            {/*<input type="text" id="post-user-id"></input>*/}
-            <SelectComponent options={vm.state.userList} id={"post-user-id"} />
-            <button onClick={()=>getPostsFiltered()}>GET POSTS</button>
+
+            <div className="filter">
+                <span>Filter by userID: </span>
+                <SelectComponent options={vm.state.userList} id={"post-user-id"} null="All"/>
+                <div className="btn-group">
+                    <button className="btn btn-info" onClick={()=>getPostsFiltered()}>GET POSTS</button>
+                    <button className="btn btn-light" onClick={()=>vm.setState({createPost: true})}>NEW POST</button>
+                </div>
+            </div>
+
+            {vm.state.createPost ? (
+                <div id="new-post" className="posts-list">
+                    <h4>Create Post</h4>
+                    <input className="title-edit" id="new-post-title" placeholder="Title"></input>
+                    <textarea className="body-edit" id="new-post-body" placeholder="Message"></textarea>
+                    <div className="post-footer">
+                        <strong>Author: </strong><SelectComponent options={vm.state.userList} id={"new-post-user-id"} />
+                        <div className="btn-group">
+                            <button className="btn btn-success" onClick={() => createPost() }> Post </button>
+                            <button className="btn btn-secondary" onClick={() =>  vm.setState({createPost: false})}> Cancel </button>
+                        </div>
+                    </div>
+                </div>
+            ):(null)}
+            
+
             { vm.postList.length > 0 ? (
-                <ul>
+                
+                <ul className="posts-list">
+                    <i className="post-number">Showing {vm.postList.length} posts.</i>
                     <ListPosts posts={vm.postList} postAPI={postAPI} state={this.state}/>                
                 </ul>
             ):(
-                <p>No posts found</p>
+                <div>No posts found</div>
             )
             }
         </div>

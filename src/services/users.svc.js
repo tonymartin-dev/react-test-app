@@ -11,10 +11,6 @@ function getUsers(){
                 console.log('USERS: ', res);
                 users = res;
                 resolve(res);
-            },
-            err => {
-                console.log('Error getting users: ', err);
-                reject();
             }
         );
 
@@ -23,32 +19,11 @@ function getUsers(){
     return promise;
 }
 
-getUsers();
-
-
-function userName(userId){
-    var promise = new Promise (function(resolve, reject){
-        let url = 'https://jsonplaceholder.typicode.com/';
-        let config= { 
-            method: 'GET', 
-            service: 'users', 
-            params: {userId: userId}
-        };
-        http.request(url, config).then(
-            res => {
-                console.log('USER INFO: ', res);
-                users = res;
-                resolve(res);
-            },
-            err => {
-                console.log('Error getting users: ', err);
-                reject();
-            }
-        );
-
-    })
-
-    return promise;
+function userName(userId, userList){
+    var user= userList.find(function(user){
+        return user.id === parseInt(userId)
+    });
+    return user;
 }
 
 module.exports = {

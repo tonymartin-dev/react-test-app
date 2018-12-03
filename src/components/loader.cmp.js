@@ -1,14 +1,14 @@
-import React from 'react';
 import './loader.css';
 
 function LoaderComponent(props) {
         
+    //Build loader element
     var loader = document.createElement('h1');
     loader.id = 'loader';
     loader.classList = 'loader-container';
     loader.innerHTML = '<div class="loader"></div>'
-    console.log('loader:', loader);
 
+    //Add or remove loader element from body
     if(props.loading){
         document.body.appendChild(loader);
     } else {

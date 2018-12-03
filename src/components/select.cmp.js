@@ -8,6 +8,10 @@ import './loader.css';
 function SelectComponent(props) {
         
     let optionsList = [];
+    
+    if(props.null){
+        optionsList.push(<option value={null} key={null}>{props.null}</option>)
+    }
 
     props.options.forEach(option => {
         optionsList.push(
@@ -15,7 +19,7 @@ function SelectComponent(props) {
         )
     });
 
-    return <select id={props.id}>
+    return <select id={props.id} className="selectpicker">
         {optionsList}
     </select>;
 

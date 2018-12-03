@@ -11,7 +11,7 @@ class PlayButton extends Component {
 
         let className = isMusicPlaying ? 'play active' : 'play';
         
-        return <a title="Play video" className={ className } onClick={ clickFunction } />;   //Click function can also be taken directly from props (props.clickFunction)
+        return <button title="Play video" className={ className } onClick={ clickFunction }></button>;   //Click function can also be taken directly from props (props.clickFunction)
     }
 };
 

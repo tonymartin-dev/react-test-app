@@ -28,13 +28,14 @@ function request(url, config){
     
     //Add params for GET requests (if any)
     let requestUrl;
-    if (method == 'GET' && config.params){
+    if (method === 'GET' && config.params){
         
         requestUrl = baseUrl + '?';
         
         for (const paramName in config.params) {
             const paramValue = config.params[paramName];
             if(paramName && paramValue){
+                if(paramValue)
                 requestUrl = requestUrl + paramName + '=' + paramValue + '&';
             }
         }
@@ -51,7 +52,7 @@ function request(url, config){
 
     //Add method
     requestConfig.method = method;
-    
+
     //Add headers
     requestConfig.headers = {};
     if(config.headers){
@@ -62,7 +63,7 @@ function request(url, config){
     }
 
     //Add body in 
-    if(method != 'GET' && config.body){
+    if(method !== 'GET' && config.body){
         requestConfig.body = JSON.stringify(config.body);
     }
 
@@ -76,11 +77,13 @@ function request(url, config){
             .then(rawResponse => rawResponse.json())
             .then(
                 response => {
-                    console.log('[REQUEST SUCCESS]', response);
+                    console.log('[REQUEST SUCCESS]', {url: requestUrl, config: requestConfig});
+                    console.log('                 ', {Response: response});
                     resolve(response);
                 },
                 error => {
-                    console.log('[REQUEST FAILURE]', error);
+                    console.log('[REQUEST FAILURE]', {url: requestUrl, config: requestConfig});
+                    console.log('                 ', {Error: error});
                     reject(error);
                 }
             );
