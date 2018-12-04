@@ -5,11 +5,7 @@ import "./modal.css";
 
 class ModalInstance {
 
-    constructor(){
-        
-        var vm = this;
-        
-    }
+    constructor(){}
 
     openSimpleModal(config){
 

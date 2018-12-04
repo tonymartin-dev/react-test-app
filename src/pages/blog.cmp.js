@@ -3,7 +3,6 @@ import React, {Component} from 'react';
 //Components
 import LoaderComponent  from '../components/loader.cmp'
 import SelectComponent  from '../components/select.cmp'
-//import ModalComponent   from '../components/modal/modal.cmp'
 
 //Services
 import http         from '../services/http.svc';
@@ -66,6 +65,7 @@ export default class RestComponent extends Component {
     constructor(props){
 
         super(props);
+        
         var vm =this;
         
         vm.state = { 
@@ -112,6 +112,7 @@ export default class RestComponent extends Component {
 
         }
 
+        //Get the users list and then get the posts list
         users.getUsers().then(
             res => {
                 
@@ -130,8 +131,9 @@ export default class RestComponent extends Component {
             }
         )
 
-        vm.modalInstance = ModalService({title: 'Título de prueba', body: 'Cuerpo de prueba'});
-        console.log('Modal instance', vm.modalInstance)
+        //Create a new modal instance.
+        vm.modal = ModalService();
+        console.log('Modal instance', vm.modal)
         
     }
 
@@ -143,6 +145,35 @@ export default class RestComponent extends Component {
         var vm = this;
 
         console.log('   %c[COMPONENT RENDER]:%c BLOG', 'background-color: darkcyan;', '')
+        
+        function createPost(){
+
+            let config = {
+                service: 'posts',
+                method:  'POST',
+                body:{
+                    title:  document.getElementById('new-post-title').value,
+                    body:   document.getElementById('new-post-body').value,
+                    userId: document.getElementById('new-post-user-id').value
+                }
+            }
+
+            console.log('Creating post: ', {data: config.body});
+            
+            vm.setState({createPost: true})
+
+            http.request('https://jsonplaceholder.typicode.com/', config).then(
+                res => {
+                    let newPost = res;
+                    newPost.user = users.userName(config.body.userId, vm.usersInfo).name;
+                    newPost.id = vm.postList.length +1;
+                    vm.postList.push(newPost);
+                    vm.setState({createPost: false});
+                    console.log('[POSTS UPDATED]', vm.postList);
+                }
+            )
+
+        }
 
         function editPost(postId){
             vm.setState(() => {
@@ -230,6 +261,25 @@ export default class RestComponent extends Component {
             );
         }
 
+        function showDeleteModal(postData){
+            var config ={
+                title:       'Delete Post',
+                body:        'Are you sure you want to delete this post?',
+                isError:     true,
+                showCancel:  true,
+                data:        postData,
+            }
+            vm.modal.openSimpleModal(config).then(
+                res => {
+                    console.log('Modal closed', res)
+                    deletePost(res.id, res.index);
+                },
+                () => {
+                    console.log('Modal dismissed')
+                }
+            );
+        }
+
         function deletePost(postId, postIndex){
             vm.setState({isLoading: true})
             let url = 'https://jsonplaceholder.typicode.com/';
@@ -246,7 +296,7 @@ export default class RestComponent extends Component {
                         title:       'Delete Post',
                         body:        'Your post was deleted.'
                     }
-                    openSimpleModal(config)
+                    vm.modal.openSimpleModal(config)
                     vm.setState({isLoading: false});
                 }
             )
@@ -259,35 +309,6 @@ export default class RestComponent extends Component {
             cancel: cancelPostEdit
         }
 
-        function createPost(){
-
-            let config = {
-                service: 'posts',
-                method:  'POST',
-                body:{
-                    title:  document.getElementById('new-post-title').value,
-                    body:   document.getElementById('new-post-body').value,
-                    userId: document.getElementById('new-post-user-id').value
-                }
-            }
-
-            console.log('Creating post: ', {data: config.body});
-            
-            vm.setState({createPost: true})
-
-            http.request('https://jsonplaceholder.typicode.com/', config).then(
-                res => {
-                    let newPost = res;
-                    newPost.user = users.userName(config.body.userId, vm.usersInfo).name;
-                    newPost.id = vm.postList.length +1;
-                    vm.postList.push(newPost);
-                    vm.setState({createPost: false});
-                    console.log('[POSTS UPDATED]', vm.postList);
-                }
-            )
-
-        }
-
         function getPostsFiltered(){
             let selectedUserId = document.getElementById('post-user-id').value;
             console.log('Getting post from user #'+ selectedUserId);
@@ -298,93 +319,8 @@ export default class RestComponent extends Component {
             }
         }
 
-        function showDeleteModal(postData){
-            //vm.setState({showModal: true});
-            var config ={
-                title:       'Delete Post',
-                body:        'Are you sure you want to delete this post?',
-                isError:     true,
-                showCancel:  true,
-                data:        postData,
-            }
-            openSimpleModal(config).then(
-                res => {
-                    console.log('Modal closed', res)
-                    deletePost(res.id, res.index);
-                },
-                () => {
-                    console.log('Modal dismissed')
-                }
-            );
-        }
-
-        /*function openModal(config){
-            console.log('Modal')
-            vm.modalData.title      = config.title;
-            vm.modalData.body       = config.body;
-            vm.modalData.isError    = config.isError;
-            vm.modalData.showCancel = config.showCancel;
-            vm.modalData.info       = config.info;
-            vm.setState({showModal: true});
-            
-            //ReactDOM.render(ModalComponent, document.getElementById('modal-layer'))
-        }*/
-
-        function openSimpleModal(config){
-            //TEMP: Default values
-            if(!config){
-                config = {
-                    title:'titulo', 
-                    body:'cuerpo',
-                    showCancel: true,
-                    isError: true
-                }
-            }
-            
-            return vm.modalInstance.openSimpleModal(config)
-            
-        }
-
-        /*function closeModal(action, info){
-            vm.setState(()=>{return{showModal: false}});
-            vm.modalData.title = '';
-            vm.modalData.body = '';
-            vm.modalData.isError = false;
-            vm.modalData.showCancel = false;
-            switch (action){
-                case 'accept':
-                vm.setState({isLoading: true})
-                    console.log('accept', info);
-                    let url = 'https://jsonplaceholder.typicode.com/';
-                    let config = {
-                        method: 'DELETE',
-                        service: 'posts/'+info.id
-                    }
-                    http.request(url, config).then(
-                        ()=>{
-                            vm.postList.splice(info.index, 1);
-                            console.log('   [POST DELETED] #'+info.index, vm.postList)
-                            vm.setState({isLoading: false});
-                            var config ={
-                                title:       'Delete Post',
-                                body:        'Your post was deleted.'
-                            }
-                            openSimpleModal(config)
-                        }
-                    )
-                    break;
-                case 'cancel':
-                    console.log('cancel');
-                    break;
-                default:
-                    console.log('close');
-                    break;
-            }
-        }*/
-
         return <div id="Blog">
             
-            {/*<ModalComponent show={this.state.showModal} data={vm.modalData} onClose={(action, data)=> closeModal(action, data)} />*/}
             <LoaderComponent loading={this.state.isLoading} />
             
             <h1>Bl-cmp</h1>
@@ -396,7 +332,6 @@ export default class RestComponent extends Component {
                 <div className="btn-group">
                     <button className="btn btn-info" onClick={()=>getPostsFiltered()}>GET POSTS</button>
                     <button className="btn btn-light" onClick={()=>vm.setState({createPost: true})}>NEW POST</button>
-                    <button className="btn btn-light" onClick={()=>openSimpleModal()}>MODAL</button>
                 </div>
             </div>
 
@@ -417,8 +352,7 @@ export default class RestComponent extends Component {
             ):(null)}
             
             {/*POSTS LIST*/}
-            { vm.postList.length > 0 ? (
-                
+            { vm.postList.length > 0 ? (                
                 <ul className="posts-list">
                     <i className="post-number">Showing {vm.postList.length} posts.</i>
                     <ListPosts posts={vm.postList} postAPI={postAPI} state={this.state}/>                
