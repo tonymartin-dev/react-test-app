@@ -1,18 +1,30 @@
-.modal-component-backdrop{
+#modal-wrap{
     position: fixed;
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: rgba(0, 0, 0, 0.4);
-    padding: 50px;
+    padding: 0;
     z-index: 50;
+    display: flex;
+    justify-content: center;
+    align-items: none;
+}
+
+.modal-component-backdrop{
+    position: absolute;
+    width: 100%;
+    height: 100%;;
+    background-color: rgba(0, 0, 0, 0.4);
+    
 }
 
 .modal-component{
     background-color: #fff;
     border-radius: 4px;
-    max-width: 500px;
+    max-width: 600px;
+    min-width: 300px;
+    height: fit-content;
     min-height: 300px;
     margin: 0 auto;
     z-index: 51;
@@ -20,25 +32,29 @@
     display: flex;
     flex-flow: column;
     overflow: hidden;
-}
-
-.modal-component > *{
-    padding: 15px;
+    margin: 50px;
 }
 
 .modal-component-header{
+    padding: 15px;
     background-color: rgba(0, 0, 0, 0.1);
 }
 .modal-component-header.error{
-    background-color: rgba(255, 0, 0, 0.1);
+    background-color: rgba(255, 0, 0, 0.5);
+    color: white;
 }
 
 .modal-component-body{
+    padding: 30px;
     flex-grow: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .modal-component-footer{
     border-top: 1px solid rgba(0, 0, 0, 0.1);
     padding: 15px 15px 0 15px;
     margin: 0 15px 15px 15px;
+    display: flex;
 }

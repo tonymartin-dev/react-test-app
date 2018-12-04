@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import ReactDOM from "react-dom";
 
 //Components
 import LoaderComponent  from '../components/loader.cmp'
@@ -44,7 +45,7 @@ function ListPosts(props){
                 {props.state.editPost !== post.id ?(
                     <div className="btn-group">
                         <button className="edit-post btn btn-ligth" onClick={() => props.postAPI.edit(post.id, editId)}>Edit</button>
-                        <button className="edit-post btn btn-info" onClick={() => props.postAPI.edit(post.id, editId)}>Delete</button>
+                        <button className="edit-post btn btn-info" onClick={() => props.postAPI.delete({id: post.id, index: index})}>Delete</button>
                     </div>
                 ):(
                     <div className="btn-group">
@@ -74,13 +75,12 @@ export default class RestComponent extends Component {
             showModal: false
         };
 
-        console.log('[COMPONENT LOADED]: BLOG', {state: vm.state})
+        let isConstructor = true;
 
+        console.log('%c[COMPONENT CONSTRUCTOR INIT]:%c BLOG', 'background-color: blue;', {state: vm.state})
         
         vm.getPosts = function(params){
-            vm.setState(() => {
-                return {isLoading: true}
-            });
+            
             let url = 'https://jsonplaceholder.typicode.com/';
             let config = {
                 method: 'GET',
@@ -94,15 +94,19 @@ export default class RestComponent extends Component {
                     vm.postList = res;
                     vm.postList.forEach(function(post){
                         post.user = users.userName(post.userId, vm.usersInfo).name
-                    })
-                    vm.setState(() => {
-                        return {isLoading: false}
                     });
+                    vm.setState(() => { return {isLoading: false, userList: vm.usersList} });
+                    if(isConstructor){
+                        console.log('%c[COMPONENT CONSTRUCTOR END]:%c BLOG', 'background-color: blue;', {state: vm.state});
+                    }
+                    isConstructor = false;
                 },
-                () => {
-                    vm.setState(() => {
-                        return {isLoading: false}
-                    });
+                err => {
+                    vm.setState(() => { return {isLoading: false} });
+                    if(isConstructor){
+                        console.log('%c[COMPONENT CONSTRUCTOR END]:%c BLOG', 'background-color: blue;', {Error: err});
+                    }
+                    isConstructor = false;
                 }
             );
 
@@ -110,7 +114,9 @@ export default class RestComponent extends Component {
 
         users.getUsers().then(
             res => {
+                
                 vm.usersInfo = res;
+
                 let users = [];
                 res.forEach(user => {
                     users.push({
@@ -118,7 +124,8 @@ export default class RestComponent extends Component {
                         value: user.id
                     });
                 });
-                vm.setState(()=>{return{userList: users}})
+                vm.usersList = users;
+
                 vm.getPosts();
             }
         )
@@ -126,13 +133,13 @@ export default class RestComponent extends Component {
     }
 
     postList = [];
-    modalData = {title: '', body: '', showCancel: false};
+    modalData = {title: '', body: '', showCancel: false, isError: false};
     
     render() {
         
         var vm = this;
 
-        console.log('load')
+        console.log('   %c[COMPONENT RENDER]:%c BLOG', 'background-color: darkcyan;', '')
 
         function editPost(postId){
             vm.setState(() => {
@@ -223,6 +230,7 @@ export default class RestComponent extends Component {
         let postAPI = {
             edit: editPost,
             save: savePost,
+            delete: showDeleteModal,
             cancel: cancelPostEdit
         }
 
@@ -265,36 +273,86 @@ export default class RestComponent extends Component {
             }
         }
 
-        function showModal(){
+        function showDeleteModal(postId){
             vm.setState({showModal: true});
-            vm.modalData.title = 'Título';
-            vm.modalData.body = 'Cuerpo';
+            var config ={
+                title:       'Delete Post',
+                body:        'Are you sure you want to delete this post?',
+                isError:     true,
+                showCancel:  true,
+                info:        postId,
+            }
+            openModal(config)
         }
 
-        function closeModal(){
+        function openModal(config){
+            console.log('Modal')
+            vm.modalData.title      = config.title;
+            vm.modalData.body       = config.body;
+            vm.modalData.isError    = config.isError;
+            vm.modalData.showCancel = config.showCancel;
+            vm.modalData.info       = config.info;
+            vm.setState({showModal: true});
+            
+            //ReactDOM.render(ModalComponent, document.getElementById('modal-layer'))
+        }
+
+        function closeModal(action, info){
             vm.setState(()=>{return{showModal: false}});
             vm.modalData.title = '';
             vm.modalData.body = '';
-            console.log('close')
+            vm.modalData.isError = false;
+            vm.modalData.showCancel = false;
+            switch (action){
+                case 'accept':
+                vm.setState({isLoading: true})
+                    console.log('accept', info);
+                    let url = 'https://jsonplaceholder.typicode.com/';
+                    let config = {
+                        method: 'DELETE',
+                        service: 'posts/'+info.id
+                    }
+                    http.request(url, config).then(
+                        ()=>{
+                            vm.postList.splice(info.index, 1);
+                            console.log('   [POST DELETED] #'+info.index, vm.postList)
+                            vm.setState({isLoading: false});
+                            var config ={
+                                title:       'Delete Post',
+                                body:        'Your post was deleted.'
+                            }
+                            openModal(config)
+                        }
+                    )
+                    break;
+                case 'cancel':
+                    console.log('cancel');
+                    break;
+                default:
+                    console.log('close');
+                    break;
+            }
         }
 
         return <div id="Blog">
             
-            <ModalComponent show={this.state.showModal} data={vm.modalData} onClose={()=> closeModal()} />
+            <ModalComponent show={this.state.showModal} data={vm.modalData} onClose={(action, data)=> closeModal(action, data)} />
             <LoaderComponent loading={this.state.isLoading} />
             
             <h1>Bl-cmp</h1>
 
+            {/*FILTER*/}
             <div className="filter">
                 <span>Filter by userID: </span>
                 <SelectComponent options={vm.state.userList} id={"post-user-id"} null="All"/>
                 <div className="btn-group">
                     <button className="btn btn-info" onClick={()=>getPostsFiltered()}>GET POSTS</button>
                     <button className="btn btn-light" onClick={()=>vm.setState({createPost: true})}>NEW POST</button>
-                    <button className="btn btn-light" onClick={()=>showModal()}>MODAL</button>
+                    <button className="btn btn-light" onClick={()=>openModal({title: 'prueba', body: 'body'})}>MODAL</button>
                 </div>
             </div>
 
+            {/*CREATE POST*/}
             {vm.state.createPost ? (
                 <div id="new-post" className="posts-list">
                     <h4>Create Post</h4>
@@ -310,7 +368,7 @@ export default class RestComponent extends Component {
                 </div>
             ):(null)}
             
-
+            {/*POSTS LIST*/}
             { vm.postList.length > 0 ? (
                 
                 <ul className="posts-list">

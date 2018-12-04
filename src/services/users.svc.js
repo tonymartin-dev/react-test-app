@@ -8,7 +8,7 @@ function getUsers(){
 
         http.request('https://jsonplaceholder.typicode.com/', { method: 'GET', service: 'users'}).then(
             res => {
-                console.log('USERS: ', res);
+                console.log('   USERS: ', res);
                 users = res;
                 resolve(res);
             }
