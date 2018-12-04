@@ -1,14 +1,14 @@
 import React, {Component} from 'react';
-import ReactDOM from "react-dom";
 
 //Components
 import LoaderComponent  from '../components/loader.cmp'
 import SelectComponent  from '../components/select.cmp'
-import ModalComponent   from '../components/modal.cmp'
+//import ModalComponent   from '../components/modal/modal.cmp'
 
 //Services
-import http     from '../services/http.svc';
-import users    from '../services/users.svc';
+import http         from '../services/http.svc';
+import users        from '../services/users.svc';
+import ModalService from '../components/modal/modal.svc'
 
 //Local imports
 import './blog.css';
@@ -129,6 +129,9 @@ export default class RestComponent extends Component {
                 vm.getPosts();
             }
         )
+
+        vm.modalInstance = ModalService({title: 'Título de prueba', body: 'Cuerpo de prueba'});
+        console.log('Modal instance', vm.modalInstance)
         
     }
 
@@ -226,6 +229,28 @@ export default class RestComponent extends Component {
                 }
             );
         }
+
+        function deletePost(postId, postIndex){
+            vm.setState({isLoading: true})
+            let url = 'https://jsonplaceholder.typicode.com/';
+            let config = {
+                method: 'DELETE',
+                service: 'posts/'+postId
+            }
+            http.request(url, config).then(
+                ()=>{
+                    vm.postList.splice(postIndex, 1);
+                    console.log('   [POST DELETED] #'+postId, vm.postList)
+                    vm.setState({isLoading: false});
+                    var config ={
+                        title:       'Delete Post',
+                        body:        'Your post was deleted.'
+                    }
+                    openSimpleModal(config)
+                    vm.setState({isLoading: false});
+                }
+            )
+        }
         
         let postAPI = {
             edit: editPost,
@@ -273,19 +298,27 @@ export default class RestComponent extends Component {
             }
         }
 
-        function showDeleteModal(postId){
-            vm.setState({showModal: true});
+        function showDeleteModal(postData){
+            //vm.setState({showModal: true});
             var config ={
                 title:       'Delete Post',
                 body:        'Are you sure you want to delete this post?',
                 isError:     true,
                 showCancel:  true,
-                info:        postId,
+                data:        postData,
             }
-            openModal(config)
+            openSimpleModal(config).then(
+                res => {
+                    console.log('Modal closed', res)
+                    deletePost(res.id, res.index);
+                },
+                () => {
+                    console.log('Modal dismissed')
+                }
+            );
         }
 
-        function openModal(config){
+        /*function openModal(config){
             console.log('Modal')
             vm.modalData.title      = config.title;
             vm.modalData.body       = config.body;
@@ -295,9 +328,24 @@ export default class RestComponent extends Component {
             vm.setState({showModal: true});
             
             //ReactDOM.render(ModalComponent, document.getElementById('modal-layer'))
+        }*/
+
+        function openSimpleModal(config){
+            //TEMP: Default values
+            if(!config){
+                config = {
+                    title:'titulo', 
+                    body:'cuerpo',
+                    showCancel: true,
+                    isError: true
+                }
+            }
+            
+            return vm.modalInstance.openSimpleModal(config)
+            
         }
 
-        function closeModal(action, info){
+        /*function closeModal(action, info){
             vm.setState(()=>{return{showModal: false}});
             vm.modalData.title = '';
             vm.modalData.body = '';
@@ -321,7 +369,7 @@ export default class RestComponent extends Component {
                                 title:       'Delete Post',
                                 body:        'Your post was deleted.'
                             }
-                            openModal(config)
+                            openSimpleModal(config)
                         }
                     )
                     break;
@@ -332,11 +380,11 @@ export default class RestComponent extends Component {
                     console.log('close');
                     break;
             }
-        }
+        }*/
 
         return <div id="Blog">
             
-            <ModalComponent show={this.state.showModal} data={vm.modalData} onClose={(action, data)=> closeModal(action, data)} />
+            {/*<ModalComponent show={this.state.showModal} data={vm.modalData} onClose={(action, data)=> closeModal(action, data)} />*/}
             <LoaderComponent loading={this.state.isLoading} />
             
             <h1>Bl-cmp</h1>
@@ -348,7 +396,7 @@ export default class RestComponent extends Component {
                 <div className="btn-group">
                     <button className="btn btn-info" onClick={()=>getPostsFiltered()}>GET POSTS</button>
                     <button className="btn btn-light" onClick={()=>vm.setState({createPost: true})}>NEW POST</button>
-                    <button className="btn btn-light" onClick={()=>openModal({title: 'prueba', body: 'body'})}>MODAL</button>
+                    <button className="btn btn-light" onClick={()=>openSimpleModal()}>MODAL</button>
                 </div>
             </div>
 
