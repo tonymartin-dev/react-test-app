@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
-import LoaderComponent from '../components/loader.cmp'
-import SelectComponent from '../components/select.cmp'
+
+//Components
+import LoaderComponent  from '../components/loader.cmp'
+import SelectComponent  from '../components/select.cmp'
+import ModalComponent   from '../components/modal.cmp'
 
 //Services
 import http     from '../services/http.svc';
@@ -25,20 +28,23 @@ function ListPosts(props){
         list.push(<li key={post.id}>
             
             {props.state.editPost === post.id ? (
-                <input className="title-edit" id={editId.title} defaultValue={ post.title } placeholder="Title"></input>
+                <div className="post">
+                    <input className="title-edit" id={editId.title} defaultValue={ post.title } placeholder="Title"></input>
+                    <textarea className="body-edit" id={editId.body} defaultValue={ post.body } placeholder="Message"></textarea>
+                </div>
             ) : (
-                <h4>{ post.title }</h4>
+                <div className="post">
+                    <h4>{ post.title }</h4>
+                    <p>{ post.body }</p>
+                </div>
             )}
-            {props.state.editPost === post.id ? (
-                <textarea className="body-edit" id={editId.body} defaultValue={ post.body } placeholder="Message"></textarea>
-            ) : (
-                <p>{ post.body }</p>
-            )}
+            
             <div className="post-footer">
                 <span><strong>Author:</strong> { post.user }</span>
                 {props.state.editPost !== post.id ?(
                     <div className="btn-group">
-                        <button className="edit-post btn" onClick={() => props.postAPI.edit(post.id, editId)}>Edit</button>
+                        <button className="edit-post btn btn-ligth" onClick={() => props.postAPI.edit(post.id, editId)}>Edit</button>
+                        <button className="edit-post btn btn-info" onClick={() => props.postAPI.edit(post.id, editId)}>Delete</button>
                     </div>
                 ):(
                     <div className="btn-group">
@@ -54,7 +60,6 @@ function ListPosts(props){
     return list;
 }
 
-
 export default class RestComponent extends Component {
 
     constructor(props){
@@ -63,9 +68,10 @@ export default class RestComponent extends Component {
         var vm =this;
         
         vm.state = { 
-            isLoading: false, 
+            isLoading: true,
             editPost: null,
-            userList: []
+            userList: [],
+            showModal: false
         };
 
         console.log('[COMPONENT LOADED]: BLOG', {state: vm.state})
@@ -120,12 +126,13 @@ export default class RestComponent extends Component {
     }
 
     postList = [];
-
+    modalData = {title: '', body: '', showCancel: false};
     
     render() {
         
         var vm = this;
 
+        console.log('load')
 
         function editPost(postId){
             vm.setState(() => {
@@ -258,9 +265,24 @@ export default class RestComponent extends Component {
             }
         }
 
+        function showModal(){
+            vm.setState({showModal: true});
+            vm.modalData.title = 'Título';
+            vm.modalData.body = 'Cuerpo';
+        }
+
+        function closeModal(){
+            vm.setState(()=>{return{showModal: false}});
+            vm.modalData.title = '';
+            vm.modalData.body = '';
+            console.log('close')
+        }
+
         return <div id="Blog">
             
+            <ModalComponent show={this.state.showModal} data={vm.modalData} onClose={()=> closeModal()} />
             <LoaderComponent loading={this.state.isLoading} />
+            
             <h1>Bl-cmp</h1>
 
             <div className="filter">
@@ -269,6 +291,7 @@ export default class RestComponent extends Component {
                 <div className="btn-group">
                     <button className="btn btn-info" onClick={()=>getPostsFiltered()}>GET POSTS</button>
                     <button className="btn btn-light" onClick={()=>vm.setState({createPost: true})}>NEW POST</button>
+                    <button className="btn btn-light" onClick={()=>showModal()}>MODAL</button>
                 </div>
             </div>
 

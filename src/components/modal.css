@@ -1,0 +1,44 @@
+.modal-component-backdrop{
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    padding: 50px;
+    z-index: 50;
+}
+
+.modal-component{
+    background-color: #fff;
+    border-radius: 4px;
+    max-width: 500px;
+    min-height: 300px;
+    margin: 0 auto;
+    z-index: 51;
+    position: relative;
+    display: flex;
+    flex-flow: column;
+    overflow: hidden;
+}
+
+.modal-component > *{
+    padding: 15px;
+}
+
+.modal-component-header{
+    background-color: rgba(0, 0, 0, 0.1);
+}
+.modal-component-header.error{
+    background-color: rgba(255, 0, 0, 0.1);
+}
+
+.modal-component-body{
+    flex-grow: 1;
+}
+
+.modal-component-footer{
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 15px 15px 0 15px;
+    margin: 0 15px 15px 15px;
+}
