@@ -1,4 +1,4 @@
-import React, { Component}                          from 'react';
+import React, { Component} from 'react';
 
 function TheTitle(){
     return <h1>Requests</h1>
@@ -42,14 +42,12 @@ function ListTodos(props){
     for (let i = 0; i<props.todos.length; i++) {
         let todo = props.todos[i];
         //console.log(post)
-        list.push(
-            <li key={todo.id}>
-                <p>
-                    <input type="checkbox" defaultChecked={ todo.completed ? true : false } onChange={(ev)=>props.handleCheckboxEv(ev, i, props.todos) }></input>
-                    { todo.title }
-                </p>
-            </li>
-        )
+        list.push(<li key={todo.id}>
+            <p>
+                <input type="checkbox" disabled={ todo.completed ? 'checked' : '' }></input>
+                { todo.title }
+            </p>
+        </li>)
     }
 
     return list;
