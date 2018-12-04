@@ -8,6 +8,7 @@ import SelectComponent  from '../components/select.cmp'
 import http         from '../services/http.svc';
 import users        from '../services/users.svc';
 import ModalService from '../components/modal/modal.svc'
+import LoaderService from '../components/loader/loader.svc'
 
 //Local imports
 import './blog.css';
@@ -72,14 +73,15 @@ export default class RestComponent extends Component {
             isLoading: true,
             editPost: null,
             userList: [],
-            showModal: false
         };
 
+        vm.setState({isLoading: true});
         let isConstructor = true;
 
         console.log('%c[COMPONENT CONSTRUCTOR INIT]:%c BLOG', 'background-color: blue;', {state: vm.state})
         
         vm.getPosts = function(params){
+            vm.setState({isLoading: true});
             
             let url = 'https://jsonplaceholder.typicode.com/';
             let config = {
@@ -95,14 +97,14 @@ export default class RestComponent extends Component {
                     vm.postList.forEach(function(post){
                         post.user = users.userName(post.userId, vm.usersInfo).name
                     });
-                    vm.setState(() => { return {isLoading: false, userList: vm.usersList} });
+                    vm.setState({userList: vm.usersList, isLoading: false});
                     if(isConstructor){
                         console.log('%c[COMPONENT CONSTRUCTOR END]:%c BLOG', 'background-color: blue;', {state: vm.state});
                     }
                     isConstructor = false;
                 },
                 err => {
-                    vm.setState(() => { return {isLoading: false} });
+                    vm.setState({isLoading: false});
                     if(isConstructor){
                         console.log('%c[COMPONENT CONSTRUCTOR END]:%c BLOG', 'background-color: blue;', {Error: err});
                     }
@@ -144,8 +146,9 @@ export default class RestComponent extends Component {
         
         var vm = this;
 
-        console.log('   %c[COMPONENT RENDER]:%c BLOG', 'background-color: darkcyan;', '')
-        
+        console.log('   %c[COMPONENT RENDER]:%c BLOG', 'background-color: darkcyan;', '', vm.state)
+        LoaderService(vm.state.isLoading);
+
         function createPost(){
 
             let config = {
@@ -160,7 +163,7 @@ export default class RestComponent extends Component {
 
             console.log('Creating post: ', {data: config.body});
             
-            vm.setState({createPost: true})
+            vm.setState({createPost: true, isLoading: true})
 
             http.request('https://jsonplaceholder.typicode.com/', config).then(
                 res => {
@@ -168,7 +171,7 @@ export default class RestComponent extends Component {
                     newPost.user = users.userName(config.body.userId, vm.usersInfo).name;
                     newPost.id = vm.postList.length +1;
                     vm.postList.push(newPost);
-                    vm.setState({createPost: false});
+                    vm.setState({createPost: false, isLoading: false});
                     console.log('[POSTS UPDATED]', vm.postList);
                 }
             )
@@ -242,6 +245,7 @@ export default class RestComponent extends Component {
                                     editPost: null
                                 }
                             });
+
                             return;
                         }
                         
@@ -252,11 +256,7 @@ export default class RestComponent extends Component {
                 () => {
 
                     alert('Error saving your post. Please, try it again later.')
-                    vm.setState(() => {
-                        return {
-                            isLoading: false
-                        }
-                    });                    
+                    vm.setState({isLoading: false});                    
                 }
             );
         }
@@ -321,7 +321,7 @@ export default class RestComponent extends Component {
 
         return <div id="Blog">
             
-            <LoaderComponent loading={this.state.isLoading} />
+            {/*<LoaderComponent loading={this.state.isLoading} />*/}
             
             <h1>Bl-cmp</h1>
 

@@ -21,8 +21,6 @@ export default class App extends Component {
         return (
             <div>
                 
-                <div id="modal-layer"></div>
-                
                 <HeaderComponent />
 
                 <div id="container">
