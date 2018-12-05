@@ -23,12 +23,12 @@ function ListPosts(props){
         let post = props.posts[index];
         //console.log(post)
         let editId = {
-            title:  'title-edit-' + post.id,
-            body:   'body-edit-' + post.id
+            title:  'title-edit-' + post._id,
+            body:   'body-edit-' + post._id
         }
-        list.push(<li key={post.id}>
+        list.push(<li key={post._id}>
             
-            {props.state.editPost === post.id ? (
+            {props.state.editPost === post._id ? (
                 <div className="post">
                     <input className="title-edit" id={editId.title} defaultValue={ post.title } placeholder="Title"></input>
                     <textarea className="body-edit" id={editId.body} defaultValue={ post.body } placeholder="Message"></textarea>
@@ -41,16 +41,16 @@ function ListPosts(props){
             )}
             
             <div className="post-footer">
-                <span><strong>Author:</strong> { post.user }</span>
-                {props.state.editPost !== post.id ?(
+                <span><strong>Author:</strong> { post.userId }</span>
+                {props.state.editPost !== post._id ?(
                     <div className="btn-group">
-                        <button className="edit-post btn btn-ligth" onClick={() => props.postAPI.edit(post.id, editId)}>Edit</button>
-                        <button className="edit-post btn btn-info" onClick={() => props.postAPI.delete({id: post.id, index: index})}>Delete</button>
+                        <button className="edit-post btn btn-ligth" onClick={() => props.postAPI.edit(post._id, editId)}>Edit</button>
+                        <button className="edit-post btn btn-info" onClick={() => props.postAPI.delete({id: post._id, index: index})}>Delete</button>
                     </div>
                 ):(
                     <div className="btn-group">
-                        <button className="edit-post btn btn-success" onClick={() => props.postAPI.save({id: post.id, user: post.userId}, editId)}> Save </button>
-                        <button className="edit-post btn btn-secondary" onClick={() => props.postAPI.cancel(post.id, editId)}> Cancel </button>
+                        <button className="edit-post btn btn-success" onClick={() => props.postAPI.save({id: post._id, user: post.userId}, editId)}> Save </button>
+                        <button className="edit-post btn btn-secondary" onClick={() => props.postAPI.cancel(post._id, editId)}> Cancel </button>
                     </div>
                 )}
             </div>
@@ -83,7 +83,7 @@ export default class RestComponent extends Component {
         vm.getPosts = function(params){
             vm.setState({isLoading: true});
             
-            let url = 'https://jsonplaceholder.typicode.com/';
+            let url = 'http://localhost:3100/';
             let config = {
                 method: 'GET',
                 service: 'posts',
@@ -95,7 +95,7 @@ export default class RestComponent extends Component {
                 res => {
                     vm.postList = res;
                     vm.postList.forEach(function(post){
-                        post.user = users.userName(post.userId, vm.usersInfo).name
+                        post.userId = users.userName(post.userId, vm.usersInfo).name
                     });
                     vm.setState({userList: vm.usersList, isLoading: false});
                     if(isConstructor){
@@ -124,7 +124,7 @@ export default class RestComponent extends Component {
                 res.forEach(user => {
                     users.push({
                         name: user.name,
-                        value: user.id
+                        value: user._id
                     });
                 });
                 vm.usersList = users;
@@ -165,7 +165,7 @@ export default class RestComponent extends Component {
             
             vm.setState({createPost: true, isLoading: true})
 
-            http.request('https://jsonplaceholder.typicode.com/', config).then(
+            http.request('http://localhost:3100/', config).then(
                 res => {
                     let newPost = res;
                     newPost.user = users.userName(config.body.userId, vm.usersInfo).name;
@@ -214,19 +214,19 @@ export default class RestComponent extends Component {
                 return;
             }
             
-            console.log('Editing post #'+post.id+': ', edited);
+            console.log('Editing post #'+post._id+': ', edited);
             
             vm.setState({isLoading: true});
             
-            let url = 'https://jsonplaceholder.typicode.com/';
+            let url = 'http://localhost:3100/';
             let config = {
                 method: 'PUT',
-                service: 'posts/'+post.user,
+                service: 'posts/'+post.userId,
                 body: {
-                    id:     post.id,
+                    id:     post._id,
                     title:  edited.title,
                     body:   edited.body,
-                    userId: post.user
+                    userId: post.userId
                 }
             }
             http.request(url, config).then(
@@ -234,7 +234,7 @@ export default class RestComponent extends Component {
 
                     for (let i = 0; i < vm.postList.length; i++) {
                         let element = vm.postList[i];
-                        if(element.id === post.id){
+                        if(element.id === post._id){
 
                             element.title = res.title;
                             element.body = res.body;
@@ -282,7 +282,7 @@ export default class RestComponent extends Component {
 
         function deletePost(postId, postIndex){
             vm.setState({isLoading: true})
-            let url = 'https://jsonplaceholder.typicode.com/';
+            let url = 'http://localhost:3100/';
             let config = {
                 method: 'DELETE',
                 service: 'posts/'+postId

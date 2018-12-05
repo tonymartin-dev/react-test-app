@@ -72,7 +72,7 @@ export default class RestComponent extends Component {
         }
 
         function saveState(service){
-            let baseUrl = 'https://jsonplaceholder.typicode.com/'+service;
+            let baseUrl = 'http://localhost:3100/'+service;
             let url = baseUrl;
             let body = JSON.stringify(vm.requestList);
             
@@ -90,7 +90,7 @@ export default class RestComponent extends Component {
 
         function request(service, params){
             
-            let baseUrl = 'https://jsonplaceholder.typicode.com/'+service;
+            let baseUrl = 'http://localhost:3100/'+service;
             let url = baseUrl + (params ? '?' : '');
             if (params){
                 for (const paramName in params) {

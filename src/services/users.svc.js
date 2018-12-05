@@ -6,7 +6,7 @@ var users = [];
 function getUsers(){
     var promise = new Promise (function(resolve, reject){
 
-        http.request('https://jsonplaceholder.typicode.com/', { method: 'GET', service: 'users'}).then(
+        http.request('http://localhost:3100/', { method: 'GET', service: 'users'}).then(
             res => {
                 console.log('   USERS: ', res);
                 users = res;
@@ -21,7 +21,7 @@ function getUsers(){
 
 function userName(userId, userList){
     var user= userList.find(function(user){
-        return user.id === parseInt(userId)
+        return user._id === userId
     });
     return user;
 }
