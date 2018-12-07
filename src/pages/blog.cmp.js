@@ -41,7 +41,7 @@ function ListPosts(props){
             )}
             
             <div className="post-footer">
-                <span><strong>Author:</strong> { post.userId }</span>
+                <span><strong>Author:</strong> { post.user }</span>
                 {props.state.editPost !== post._id ?(
                     <div className="btn-group">
                         <button className="edit-post btn btn-ligth" onClick={() => props.postAPI.edit(post._id, editId)}>Edit</button>
@@ -49,7 +49,7 @@ function ListPosts(props){
                     </div>
                 ):(
                     <div className="btn-group">
-                        <button className="edit-post btn btn-success" onClick={() => props.postAPI.save({id: post._id, user: post.userId}, editId)}> Save </button>
+                        <button className="edit-post btn btn-success" onClick={() => props.postAPI.save({id: post._id, userId: post.userId}, editId)}> Save </button>
                         <button className="edit-post btn btn-secondary" onClick={() => props.postAPI.cancel(post._id, editId)}> Cancel </button>
                     </div>
                 )}
@@ -95,7 +95,7 @@ export default class RestComponent extends Component {
                 res => {
                     vm.postList = res;
                     vm.postList.forEach(function(post){
-                        post.userId = users.userName(post.userId, vm.usersInfo).name
+                        post.user = users.userName(post.userId, vm.usersInfo).name
                     });
                     vm.setState({userList: vm.usersList, isLoading: false});
                     if(isConstructor){
@@ -214,16 +214,15 @@ export default class RestComponent extends Component {
                 return;
             }
             
-            console.log('Editing post #'+post._id+': ', edited);
+            console.log('Editing post #'+post.id+': ', edited);
             
             vm.setState({isLoading: true});
             
             let url = 'http://localhost:3100/';
             let config = {
                 method: 'PUT',
-                service: 'posts/'+post.userId,
+                service: 'posts/?id='+post.id,
                 body: {
-                    id:     post._id,
                     title:  edited.title,
                     body:   edited.body,
                     userId: post.userId
@@ -298,6 +297,15 @@ export default class RestComponent extends Component {
                     }
                     vm.modal.openSimpleModal(config)
                     vm.setState({isLoading: false});
+                },
+                ()=>{
+                    vm.setState({isLoading: false});
+                    var config ={
+                        title:      'Delete Post',
+                        body:       'There was an error. Your post couldn\'t be deleted.',
+                        isError:    true
+                    }
+                    vm.modal.openSimpleModal(config)
                 }
             )
         }

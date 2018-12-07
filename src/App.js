@@ -5,6 +5,7 @@ import { Route }            from 'react-router-dom';
 //Components
 import HeaderComponent      from './common/header.cmp'
 import HomeComponent        from './pages/home.cmp';
+import LoginComponent       from './pages/login.cmp';
 import PlayerComponent      from './pages/player.cmp';
 import RestComponent        from './pages/rest.cmp'
 import BlogComponent        from './pages/blog.cmp'
@@ -24,11 +25,12 @@ export default class App extends Component {
                 <HeaderComponent />
 
                 <div id="container">
-                    <Route path="/" exact component={ HomeComponent }/>
-                    <Route path="/player" component={ PlayerComponent }/>
+                    <Route path="/"   exact component={ LoginComponent }/>
+                    <Route path="/home"     component={ HomeComponent }/>
+                    <Route path="/player"   component={ PlayerComponent }/>
                     <Route path="/function" render={ () => (<h1>Function instead of component</h1>) }/>
-                    <Route path="/rest" component={ RestComponent }/>
-                    <Route path="/blog" component={ BlogComponent }/>
+                    <Route path="/rest"     component={ RestComponent }/>
+                    <Route path="/blog"     component={ BlogComponent }/>
                 </div>
 
                 <FooterComponent />
