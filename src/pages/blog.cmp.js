@@ -105,17 +105,17 @@ export default class RestComponent extends Component {
                     vm.postList.forEach(function(post){
                         post.user = users.userName(post.userId, vm.usersInfo).name
                     });
-                    //vm.setState({userList: vm.usersList, isLoading: false});
-                    vm.state.userList = vm.usersList;
-                    vm.state.isLoading = false;
+                    vm.setState({userList: vm.usersList, isLoading: false});
+                    //vm.state.userList = vm.usersList;
+                    //vm.state.isLoading = false;
                     if(isConstructor){
                         console.log('%c[COMPONENT CONSTRUCTOR END]:%c BLOG', 'background-color: blue;', {state: vm.state});
                     }
                     isConstructor = false;
                 },
                 err => {
-                    //vm.setState({isLoading: false});
-                    vm.setState.isLoading = false;
+                    vm.setState({isLoading: false});
+                    //vm.setState.isLoading = false;
                     if(isConstructor){
                         console.log('%c[COMPONENT CONSTRUCTOR END]:%c BLOG', 'background-color: blue;', {Error: err});
                     }
