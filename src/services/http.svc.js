@@ -73,7 +73,9 @@ function request(url, config){
     var promise = new Promise(function(resolve, reject){
 
         fetch(requestUrl, requestConfig)
-            .then(rawResponse => rawResponse.json())
+            .then(rawResponse => {
+                return rawResponse.json();
+            })
             .then(
                 response => {
                     console.log('   %c[REQUEST SUCCESS]%c', 'background-color: green;','', {url: requestUrl, config: requestConfig});
@@ -91,8 +93,28 @@ function request(url, config){
     return promise;
 }
 
+function getToken(){
+    var cookies = document.cookie;
+    if(!cookies)
+        return;
+
+    var cookiesArray = cookies.split(';')
+
+    var cookiesObject = {};
+
+    cookiesArray.forEach(function(cookie){
+        let cookieLine = cookie.split('=');
+        let key = cookieLine[0].trim();
+        let value = cookieLine[1].trim();
+        cookiesObject[key] = value;
+    });
+
+    return cookiesObject.token;
+}
+
 
 module.exports = {
     test:       test,
-    request:    request
+    request:    request,
+    getToken:   getToken
 };

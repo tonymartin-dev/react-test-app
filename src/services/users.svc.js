@@ -6,7 +6,15 @@ var users = [];
 function getUsers(){
     var promise = new Promise (function(resolve, reject){
 
-        http.request('http://localhost:3100/', { method: 'GET', service: 'users'}).then(
+        let config = { 
+            method: 'GET', 
+            service: 'users',
+            headers: {
+                Authorization: 'Bearer ' + http.getToken()
+            }
+        }
+
+        http.request('http://localhost:3100/', config).then(
             res => {
                 console.log('   USERS: ', res);
                 users = res;

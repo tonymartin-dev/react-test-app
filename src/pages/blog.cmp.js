@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 
 //Components
-import LoaderComponent  from '../components/loader.cmp'
 import SelectComponent  from '../components/select.cmp'
 
 //Services
@@ -75,20 +74,29 @@ export default class RestComponent extends Component {
             userList: [],
         };
 
-        vm.setState({isLoading: true});
+        //vm.setState({isLoading: true});
         let isConstructor = true;
 
         console.log('%c[COMPONENT CONSTRUCTOR INIT]:%c BLOG', 'background-color: blue;', {state: vm.state})
         
         vm.getPosts = function(params){
-            vm.setState({isLoading: true});
+            //vm.setState({isLoading: true});
+            vm.state.isLoading = true;
+            
+            let token = http.getToken();
+            let { history } = this.props;            
+            if(!token)  history.push('/login');
             
             let url = 'http://localhost:3100/';
+            
             let config = {
                 method: 'GET',
                 service: 'posts',
                 params: {
                     userId: params && params.userId ? params.userId : null
+                },
+                headers: {
+                    Authorization: 'Bearer ' + token
                 }
             }
             http.request(url, config).then(
@@ -97,14 +105,17 @@ export default class RestComponent extends Component {
                     vm.postList.forEach(function(post){
                         post.user = users.userName(post.userId, vm.usersInfo).name
                     });
-                    vm.setState({userList: vm.usersList, isLoading: false});
+                    //vm.setState({userList: vm.usersList, isLoading: false});
+                    vm.state.userList = vm.usersList;
+                    vm.state.isLoading = false;
                     if(isConstructor){
                         console.log('%c[COMPONENT CONSTRUCTOR END]:%c BLOG', 'background-color: blue;', {state: vm.state});
                     }
                     isConstructor = false;
                 },
                 err => {
-                    vm.setState({isLoading: false});
+                    //vm.setState({isLoading: false});
+                    vm.setState.isLoading = false;
                     if(isConstructor){
                         console.log('%c[COMPONENT CONSTRUCTOR END]:%c BLOG', 'background-color: blue;', {Error: err});
                     }
@@ -137,7 +148,7 @@ export default class RestComponent extends Component {
         vm.modal = ModalService();
         console.log('Modal instance', vm.modal)
         
-    }
+    } //End of constructor
 
     postList = [];
     modalData = {title: '', body: '', showCancel: false, isError: false};
@@ -154,6 +165,9 @@ export default class RestComponent extends Component {
             let config = {
                 service: 'posts',
                 method:  'POST',
+                headers: {
+                    Authorization: 'Bearer ' + http.getToken()
+                },
                 body:{
                     title:  document.getElementById('new-post-title').value,
                     body:   document.getElementById('new-post-body').value,
@@ -222,6 +236,9 @@ export default class RestComponent extends Component {
             let config = {
                 method: 'PUT',
                 service: 'posts/?id='+post.id,
+                headers: {
+                    Authorization: 'Bearer ' + http.getToken()
+                },
                 body: {
                     title:  edited.title,
                     body:   edited.body,
@@ -284,7 +301,10 @@ export default class RestComponent extends Component {
             let url = 'http://localhost:3100/';
             let config = {
                 method: 'DELETE',
-                service: 'posts/'+postId
+                service: 'posts/'+postId,
+                headers: {
+                    Authorization: 'Bearer ' + http.getToken()
+                },
             }
             http.request(url, config).then(
                 ()=>{
