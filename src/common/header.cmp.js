@@ -3,17 +3,7 @@ import { Link } from 'react-router-dom';
 
 export default class HeaderComponent extends Component {
     
-    constructor(props){
-
-        super(props);
-        
-        var vm =this;
-    }
-
     render() {
-
-        console.log('HEADER USER: ', this.props.user);
-
 
         return (<header id="header">
             <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -39,7 +29,7 @@ export default class HeaderComponent extends Component {
                         </li>
                     </ul>
                     <div id="user-resume">
-                        <img height="30" src="generic-user.jpg"></img>
+                        <img height="30" src="generic-user.jpg" alt="UserLogo"></img>
                         {this.props.user && this.props.user.name ? (
                             <span>{this.props.user.name}</span>
                         ):(

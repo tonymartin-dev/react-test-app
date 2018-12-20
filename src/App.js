@@ -72,7 +72,6 @@ export default class App extends Component {
 
         var vm = this;
 
-        console.log('APP USER: ', vm.state.user)
         function loadUser(user){
             vm.setState({user: user})
         }

@@ -4,7 +4,6 @@ var http=require('../services/http.svc');
 var users = [];
 
 function getUsers(){
-    var promise = new Promise (function(resolve, reject){
 
         let config = { 
             method: 'GET', 
@@ -14,17 +13,9 @@ function getUsers(){
             }
         }
 
-        http.request('http://localhost:3100/', config).then(
-            res => {
-                console.log('   USERS: ', res);
-                users = res;
-                resolve(res);
-            }
-        );
+        return http.request('http://localhost:3100/', config)
 
-    })
 
-    return promise;
 }
 
 function userName(userId, userList){

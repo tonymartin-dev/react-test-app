@@ -74,20 +74,23 @@ function request(url, config){
 
         fetch(requestUrl, requestConfig)
             .then(rawResponse => {
+                if (!rawResponse.ok)
+                    throw Error(rawResponse.statusText);
                 return rawResponse.json();
             })
             .then(
                 response => {
                     console.log('   %c[REQUEST SUCCESS]%c', 'background-color: green;','', {url: requestUrl, config: requestConfig});
                     console.log('                    ', {Response: response});
-                    resolve(response);
+                    resolve(response);                    
                 },
                 error => {
                     console.log('   %c[REQUEST FAILURE]%c', 'background-color: red;','', {url: requestUrl, config: requestConfig});
                     console.log('                    ', {Error: error});
                     reject(error);
                 }
-            );
+            )
+            
     });
 
     return promise;
