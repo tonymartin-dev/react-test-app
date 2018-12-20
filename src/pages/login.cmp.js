@@ -25,7 +25,7 @@ class LoginComponent extends React.Component {
         console.log('LOGIN: ',this.credentials);
 
         let config = {
-            service: 'login',
+            service: 'users/login',
             method:  'POST',
             body:{
                 username: this.credentials.username,
