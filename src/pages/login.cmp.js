@@ -1,5 +1,6 @@
 import React from 'react';
 import http         from '../services/http.svc';
+import { Link } from 'react-router-dom';
 
 class LoginComponent extends React.Component {
 
@@ -36,9 +37,9 @@ class LoginComponent extends React.Component {
         http.request('http://localhost:3100/', config).then(
             res => {
                 console.log('[LOGIN SUCCESS]', res);
-                var token = res.token;
-                document.cookie = 'token='+token;
-                document.cookie = 'probando=sdofinsdvoisdvoisdjvoisdjvosidjv'
+                
+                document.cookie = 'token='+res.token;
+               
                 let { history } = this.props;
                 history.push('/blog');
             }
@@ -68,6 +69,7 @@ class LoginComponent extends React.Component {
             
                 <div>
                     <input className="btn" type="submit" value="Log In" onClick={this.submit}/>
+                    <Link to="/signin" className="btn">Sign In</Link>
                 </div>
 
         </div>)

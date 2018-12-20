@@ -6,9 +6,9 @@ function HeaderComponent(){
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
             <div className="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul className="navbar-nav mr-auto">
-                    <li className="nav-item">
+                    {/*<li className="nav-item">
                         <Link to="/" className="nav-link">Home</Link>
-                    </li>
+                    </li>*/}
                     <li className="nav-item">
                         <Link to="/player" className="nav-link">Player</Link>
                     </li>
@@ -20,6 +20,9 @@ function HeaderComponent(){
                     </li>
                     <li className="nav-item">
                         <Link to="/blog" className="nav-link">Blog</Link>
+                    </li>
+                    <li className="nav-item">
+                        <Link to="/logout" className="nav-link">Log Out</Link>
                     </li>
                 </ul>
             </div>

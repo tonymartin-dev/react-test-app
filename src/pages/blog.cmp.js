@@ -67,7 +67,7 @@ export default class RestComponent extends Component {
         super(props);
         
         var vm =this;
-        
+
         vm.state = { 
             isLoading: true,
             editPost: null,

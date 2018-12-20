@@ -6,6 +6,8 @@ import { Route }            from 'react-router-dom';
 import HeaderComponent      from './common/header.cmp'
 import HomeComponent        from './pages/home.cmp';
 import LoginComponent       from './pages/login.cmp';
+import LogoutComponent      from './pages/logout.cmp';
+import SigninComponent      from './pages/signin.cmp';
 import PlayerComponent      from './pages/player.cmp';
 import RestComponent        from './pages/rest.cmp'
 import BlogComponent        from './pages/blog.cmp'
@@ -22,6 +24,10 @@ export default class App extends Component {
     constructor(props){
 
         super(props);
+
+        var vm = this;
+        
+        vm.state = { user: null };
 
         let token = http.getToken();
         
@@ -75,6 +81,8 @@ export default class App extends Component {
                     <Route path="/function" render={ () => (<h1>Function instead of component</h1>) }/>
                     <Route path="/rest"     component={ RestComponent }/>
                     <Route path="/blog"     component={ BlogComponent }/>
+                    <Route path="/logout"   component={ LogoutComponent }/>
+                    <Route path="/signin"   component={ SigninComponent }/>
                 </div>
 
                 <FooterComponent />
