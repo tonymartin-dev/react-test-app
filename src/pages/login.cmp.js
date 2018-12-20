@@ -22,15 +22,15 @@ class LoginComponent extends React.Component {
     submit(){
 
         //this.setState({username: this.credentials.username, password: this.credentials.password})
-
-        console.log('LOGIN: ',this.credentials);
+        var vm = this;
+        console.log('LOGIN: ',vm.credentials);
 
         let config = {
             service: 'users/login',
             method:  'POST',
             body:{
-                username: this.credentials.username,
-                password: this.credentials.password
+                username: vm.credentials.username,
+                password: vm.credentials.password
             }
         }
 
@@ -39,8 +39,11 @@ class LoginComponent extends React.Component {
                 console.log('[LOGIN SUCCESS]', res);
                 
                 document.cookie = 'token='+res.token;
+
+                //Set the new user in the App state;
+                vm.props.loadUser(res.user);
                
-                let { history } = this.props;
+                let { history } = vm.props;
                 history.push('/blog');
             }
         )

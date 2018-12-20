@@ -49,6 +49,7 @@ export default class App extends Component {
                         if(token){
                             console.log('[REFRESH TOKEN SUCCESS]', res);
                             document.cookie = 'token='+token;
+                            vm.setState({user: res.user});
                         } else {
                             console.log('[REFRESH TOKEN ERROR]. Deleting cookie...', res);
                             document.cookie = 'token=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
@@ -60,22 +61,29 @@ export default class App extends Component {
             } else
                 console.log('No token to refresh')
         }
+        refreshToken();
 
-        var refreshTokenInterval = window.setInterval( refreshToken,599999)
-
+        var refreshTokenInterval = window.setInterval(refreshToken,599999);
 
     }
 
     //Component's template
     render() {
-        
+
+        var vm = this;
+
+        console.log('APP USER: ', vm.state.user)
+        function loadUser(user){
+            vm.setState({user: user})
+        }
+
         return (
             <div>
                 
-                <HeaderComponent />
+                <HeaderComponent user={this.state.user}/>
 
                 <div id="container">
-                    <Route path="/"   exact component={ LoginComponent }/>
+                    <Route path="/"   exact render={ props=><LoginComponent loadUser={loadUser}  {...props} /> } user="prueba"/>
                     <Route path="/home"     component={ HomeComponent }/>
                     <Route path="/player"   component={ PlayerComponent }/>
                     <Route path="/function" render={ () => (<h1>Function instead of component</h1>) }/>
