@@ -1,12 +1,17 @@
 import React from 'react';
-import http         from '../services/http.svc';
 import { Link } from 'react-router-dom';
+
+//Services
+import http         from '../services/http.svc';
+
+//Local imports
+import './login.css';
 
 class LoginComponent extends React.Component {
 
     constructor(props) {
         super(props);
-        //this.state = { username: '', password: '' };
+        this.state = { errorMessage: null };
     
         this.handleChange = this.handleChange.bind(this);
         this.submit = this.submit.bind(this);
@@ -45,6 +50,9 @@ class LoginComponent extends React.Component {
                
                 let { history } = vm.props;
                 history.push('/blog');
+            },
+            () => {
+                vm.setState({errorMessage: 'Invalid Credentials'})
             }
         )
     }
@@ -52,6 +60,8 @@ class LoginComponent extends React.Component {
     
     render() {
         console.log('Login');
+
+        var vm = this;        
 
         return (<div id="player">
             <h1>Login</h1>
@@ -69,6 +79,10 @@ class LoginComponent extends React.Component {
                     </div>
                     <input type="password" className="form-control" id="password" name="password" value={this.credentials.value} onChange={this.handleChange} aria-describedby="basic-addon3"/>
                 </div>
+
+                {vm.state.errorMessage ? (
+                    <div id="login-error">{vm.state.errorMessage}</div>
+                ):(null)}
             
                 <div>
                     <input className="btn" type="submit" value="Log In" onClick={this.submit}/>

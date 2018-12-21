@@ -56,14 +56,17 @@ export default class App extends Component {
                             window.clearInterval(refreshTokenInterval)
                         }
                     },
-                    ()=> console.log('Error')
+                    ()=> {
+                        let { history } = this.props;            
+                        history.push('/login');
+                    }
                 );
             } else
                 console.log('No token to refresh')
         }
         refreshToken();
 
-        var refreshTokenInterval = window.setInterval(refreshToken,599999);
+        var refreshTokenInterval = window.setInterval(refreshToken,179999);
 
     }
 
@@ -82,13 +85,14 @@ export default class App extends Component {
                 <HeaderComponent user={this.state.user}/>
 
                 <div id="container">
-                    <Route path="/"   exact render={ props=><LoginComponent loadUser={loadUser}  {...props} /> } user="prueba"/>
+                    <Route path="/"   exact render={ props=><LoginComponent  loadUser={loadUser}  {...props} /> } />
+                    <Route path="/logout"   render={ props=><LogoutComponent loadUser={loadUser}  {...props} /> } />
+
                     <Route path="/home"     component={ HomeComponent }/>
                     <Route path="/player"   component={ PlayerComponent }/>
                     <Route path="/function" render={ () => (<h1>Function instead of component</h1>) }/>
                     <Route path="/rest"     component={ RestComponent }/>
                     <Route path="/blog"     component={ BlogComponent }/>
-                    <Route path="/logout"   component={ LogoutComponent }/>
                     <Route path="/signin"   component={ SigninComponent }/>
                 </div>
 

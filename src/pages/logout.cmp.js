@@ -3,7 +3,14 @@ import { Link } from 'react-router-dom';
 
 class LogoutComponent extends React.Component {
     
+    constructor(props) {
+        super(props);
+        props.loadUser(null);
+    }
+
     render() {
+
+
         console.log('Logout');
 
         document.cookie = 'token=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';

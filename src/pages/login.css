@@ -1,0 +1,7 @@
+#login-error {
+    background-color: rgba(255, 0, 0, 0.36);
+    padding: 10px 20px;
+    margin: 20px auto;
+    color: white;
+    width: fit-content;
+}

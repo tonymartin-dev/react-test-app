@@ -1,0 +1,29 @@
+#user-resume.dropdown .btn-secondary{
+    background-color: transparent;
+    color: inherit;
+    border: none;
+    display: flex;
+    align-items: center;
+}
+#user-resume.dropdown .btn-secondary:hover{
+    background-color: rgba(0,0,0,0.2);
+}
+#user-resume.dropdown .btn-secondary:focus{
+    box-shadow: none;
+    border: 1px solid rgba(0,0,0,.15);
+    border-bottom: none;
+    background-color: white;
+    border-radius: .25rem .25rem 0 0;
+}
+
+#user-resume.dropdown .user-logo{
+    height: 30px;
+    margin-right: 10px;
+}
+
+#user-resume.dropdown .dropdown-menu{
+    min-width: 100%;
+    margin: 0;
+    border-top: none;
+    border-radius: 0 0 .25rem .25rem;
+}

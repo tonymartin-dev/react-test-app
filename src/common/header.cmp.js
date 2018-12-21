@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import { Link } from 'react-router-dom';
+import UserMenuComponent from './user-menu.cmp';
 
 export default class HeaderComponent extends Component {
     
@@ -13,6 +14,9 @@ export default class HeaderComponent extends Component {
                             <Link to="/" className="nav-link">Home</Link>
                         </li>*/}
                         <li className="nav-item">
+                            <Link to="/blog" className="nav-link">Blog</Link>
+                        </li>
+                        <li className="nav-item">
                             <Link to="/player" className="nav-link">Player</Link>
                         </li>
                         <li className="nav-item">
@@ -22,20 +26,13 @@ export default class HeaderComponent extends Component {
                             <Link to="/rest" className="nav-link">Rest</Link>
                         </li>
                         <li className="nav-item">
-                            <Link to="/blog" className="nav-link">Blog</Link>
-                        </li>
-                        <li className="nav-item">
                             <Link to="/logout" className="nav-link">Log Out</Link>
                         </li>
                     </ul>
-                    <div id="user-resume">
-                        <img height="30" src="generic-user.jpg" alt="UserLogo"></img>
+                    
                         {this.props.user && this.props.user.name ? (
-                            <span>{this.props.user.name}</span>
-                        ):(
-                            <Link to="/">Log In</Link>
-                        )}
-                    </div>
+                            <UserMenuComponent user={this.props.user} />
+                        ):(null)}
                 </div>
             </nav>
         </header>);
