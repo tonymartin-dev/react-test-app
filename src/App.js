@@ -10,6 +10,7 @@ import LogoutComponent      from './pages/logout.cmp';
 import SigninComponent      from './pages/signin.cmp';
 import PlayerComponent      from './pages/player.cmp';
 import RestComponent        from './pages/rest.cmp'
+import ProfileComponent     from './pages/profile.cmp'
 import BlogComponent        from './pages/blog.cmp'
 import FooterComponent      from './common/footer.cmp'
 
@@ -93,6 +94,7 @@ export default class App extends Component {
                     <Route path="/function" render={ () => (<h1>Function instead of component</h1>) }/>
                     <Route path="/rest"     component={ RestComponent }/>
                     <Route path="/blog"     component={ BlogComponent }/>
+                    <Route path="/profile"   render={ props=><ProfileComponent  user={this.state.user}  {...props} /> } />
                     <Route path="/signin"   component={ SigninComponent }/>
                 </div>
 
