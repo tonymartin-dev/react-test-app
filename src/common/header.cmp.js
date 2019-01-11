@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import UserMenuComponent from './user-menu.cmp';
 
 export default class HeaderComponent extends Component {
-    
+
     render() {
 
         return (<header id="header">
@@ -31,7 +31,7 @@ export default class HeaderComponent extends Component {
                     </ul>
                     
                         {this.props.user && this.props.user.name ? (
-                            <UserMenuComponent user={this.props.user} />
+                            <UserMenuComponent logIn={this.props.logIn} user={this.props.user} />
                         ):(null)}
                 </div>
             </nav>

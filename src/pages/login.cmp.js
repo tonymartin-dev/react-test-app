@@ -14,7 +14,7 @@ class LoginComponent extends React.Component {
         this.state = { errorMessage: null };
     
         this.handleChange = this.handleChange.bind(this);
-        this.submit = this.submit.bind(this);
+        this.submit = this.submit.bind(this);        
     }
 
     credentials = { username: '', password: '' }
@@ -50,9 +50,12 @@ class LoginComponent extends React.Component {
                
                 let { history } = vm.props;
                 history.push('/blog');
+                vm.props.logIn()
             },
-            () => {
+            err => {
+                console.log('[LOGIN ERROR]', err);
                 vm.setState({errorMessage: 'Invalid Credentials'})
+                vm.props.logIn(false)
             }
         )
     }
@@ -66,28 +69,32 @@ class LoginComponent extends React.Component {
         return (<div id="player">
             <h1>Login</h1>
             
-                <div className="input-group mb-3">
-                    <div className="input-group-prepend">
-                        <span className="input-group-text" id="basic-addon3">User</span>
-                    </div>
-                    <input type="text" className="form-control" id="username" name="username" value={this.credentials.value} onChange={this.handleChange} aria-describedby="basic-addon3"/>
-                </div>
-                
-                <div className="input-group mb-3">
-                    <div className="input-group-prepend">
-                        <span className="input-group-text" id="basic-addon3">Password</span>
-                    </div>
-                    <input type="password" className="form-control" id="password" name="password" value={this.credentials.value} onChange={this.handleChange} aria-describedby="basic-addon3"/>
-                </div>
+            {this.props.msg ? (
+                <div className="alert alert-danger" role="alert">{this.props.msg}</div>
+            ):null}
 
-                {vm.state.errorMessage ? (
-                    <div id="login-error">{vm.state.errorMessage}</div>
-                ):(null)}
-            
-                <div>
-                    <input className="btn" type="submit" value="Log In" onClick={this.submit}/>
-                    <Link to="/signin" className="btn">Sign In</Link>
+            <div className="input-group mb-3">
+                <div className="input-group-prepend">
+                    <span className="input-group-text" id="basic-addon3">User</span>
                 </div>
+                <input type="text" className="form-control" id="username" name="username" value={this.credentials.value} onChange={this.handleChange} aria-describedby="basic-addon3"/>
+            </div>
+            
+            <div className="input-group mb-3">
+                <div className="input-group-prepend">
+                    <span className="input-group-text" id="basic-addon3">Password</span>
+                </div>
+                <input type="password" className="form-control" id="password" name="password" value={this.credentials.value} onChange={this.handleChange} aria-describedby="basic-addon3"/>
+            </div>
+
+            {vm.state.errorMessage ? (
+                <div id="login-error">{vm.state.errorMessage}</div>
+            ):(null)}
+        
+            <div>
+                <input className="btn" type="submit" value="Log In" onClick={this.submit}/>
+                <Link to="/signin" className="btn">Sign In</Link>
+            </div>
 
         </div>)
     }

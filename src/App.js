@@ -9,7 +9,6 @@ import LoginComponent       from './pages/login.cmp';
 import LogoutComponent      from './pages/logout.cmp';
 import SigninComponent      from './pages/signin.cmp';
 import PlayerComponent      from './pages/player.cmp';
-import RestComponent        from './pages/rest.cmp'
 import ProfileComponent     from './pages/profile.cmp'
 import BlogComponent        from './pages/blog.cmp'
 import FooterComponent      from './common/footer.cmp'
@@ -28,7 +27,7 @@ export default class App extends Component {
 
         var vm = this;
         
-        vm.state = { user: null };
+        vm.state = { user: null, isLoggedIn: false };
 
         let token = http.getToken();
         
@@ -41,7 +40,7 @@ export default class App extends Component {
             }
         }
 
-        function refreshToken(){
+        vm.refreshToken =  function(isFirst){
             let token = http.getToken();
             if(token){
                 http.request(url, config).then(
@@ -51,23 +50,35 @@ export default class App extends Component {
                             console.log('[REFRESH TOKEN SUCCESS]', res);
                             document.cookie = 'token='+token;
                             vm.setState({user: res.user});
+                            vm.setState({isLoggedIn: true})
                         } else {
                             console.log('[REFRESH TOKEN ERROR]. Deleting cookie...', res);
                             document.cookie = 'token=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-                            window.clearInterval(refreshTokenInterval)
+                            if(vm.refreshTokenInterval)
+                                window.clearInterval(vm.refreshTokenInterval)
+                            if(isFirst)
+                                vm.setState({isLoggedIn: false})
+                            else
+                                vm.setState({isLoggedIn: 'expired'})
                         }
                     },
-                    ()=> {
-                        let { history } = this.props;            
-                        history.push('/login');
+                    err=> {
+                        console.log('[REFRESH TOKEN ERROR] Server error.', err)
+                        if(vm.refreshTokenInterval)
+                            window.clearInterval(vm.refreshTokenInterval)
+                        vm.setState({isLoggedIn: 'error'})
                     }
                 );
-            } else
-                console.log('No token to refresh')
+            } else{
+                console.log('[REFRESH TOKEN ERROR]. No token to refresh')
+                if(vm.refreshTokenInterval)
+                    window.clearInterval(vm.refreshTokenInterval)
+                vm.setState({isLoggedIn: false})
+            }
+            
         }
-        refreshToken();
 
-        var refreshTokenInterval = window.setInterval(refreshToken,179999);
+        vm.refreshToken();
 
     }
 
@@ -77,30 +88,62 @@ export default class App extends Component {
         var vm = this;
 
         function loadUser(user){
-            vm.setState({user: user})
+            vm.setState({user: user});
+        }
+        
+        function logIn(refresh){
+            if(refresh ===undefined) refresh = true;
+            if(refresh){
+                vm.setState({isLoggedIn: true});
+                //vm.refreshToken();
+                window.clearInterval(vm.refreshTokenInterval)
+                vm.refreshTokenInterval = window.setInterval(vm.refreshToken,270000);                
+            } else {
+                vm.setState({isLoggedIn: 'loggedOut'});
+                window.clearInterval(vm.refreshTokenInterval)
+            }
         }
 
         return (
             <div>
-                
-                <HeaderComponent user={this.state.user}/>
 
-                <div id="container">
-                    <Route path="/"   exact render={ props=><LoginComponent  loadUser={loadUser}  {...props} /> } />
-                    <Route path="/logout"   render={ props=><LogoutComponent loadUser={loadUser}  {...props} /> } />
-
-                    <Route path="/home"     component={ HomeComponent }/>
-                    <Route path="/player"   component={ PlayerComponent }/>
-                    <Route path="/function" render={ () => (<h1>Function instead of component</h1>) }/>
-                    <Route path="/rest"     component={ RestComponent }/>
-                    <Route path="/blog"     component={ BlogComponent }/>
-                    <Route path="/profile"   render={ props=><ProfileComponent  user={this.state.user}  {...props} /> } />
-                    <Route path="/signin"   component={ SigninComponent }/>
-                </div>
+                {vm.state.isLoggedIn === true ? (
+                    <div>
+                        <HeaderComponent logIn={logIn} user={this.state.user}/>
+                        
+                        <div id="container">
+                            <Route path="/"   exact render={ props=> <LoginComponent logIn={logIn} loadUser={loadUser}  {...props} /> } />
+                            <Route path="/logout"   render={ props=><LogoutComponent logIn={logIn} loadUser={loadUser} msg="You have successfuly logged out."  {...props} /> } />
+        
+                            <Route path="/home"     logIn={logIn} component={ HomeComponent }/>
+                            <Route path="/player"   logIn={logIn} component={ PlayerComponent }/>
+                            <Route path="/function" render={ () => (<h1>Function instead of component</h1>) }/>
+                            <Route path="/blog"     logIn={logIn} component={ BlogComponent }/>
+                            <Route path="/profile"  render={ props=><ProfileComponent logIn={logIn} user={this.state.user}  {...props} /> } />
+                            <Route path="/signin"   logIn={logIn} component={ SigninComponent }/>
+                        </div>
+                    </div>
+                ):(
+                    <div id="container">
+                        {vm.state.isLoggedIn === false ? (
+                                <Route path="/"   render={ props=><LoginComponent logIn={logIn} loadUser={loadUser}  {...props} /> }/>
+                        ):null}
+                        {vm.state.isLoggedIn === 'expired' ? (
+                                <Route path="/"   render={ props=><LoginComponent logIn={logIn} loadUser={loadUser} msg="Your session expired. Please, log in again."  {...props} /> }/>
+                        ):null}
+                        {vm.state.isLoggedIn === 'error' ? (
+                                <Route path="/"   render={ props=><LoginComponent logIn={logIn} loadUser={loadUser} msg="There was an error with your session. Please, try again later."  {...props} /> }/>
+                        ):null}
+                        {vm.state.isLoggedIn === 'loggedOut' ? (
+                                <Route path="/"   render={ props=><LoginComponent logIn={logIn} loadUser={loadUser} msg="You have successfuly logged out."  {...props} /> }/>
+                        ):null}
+                    </div>
+                )}
 
                 <FooterComponent />
 
             </div>
+
         )
         
     }

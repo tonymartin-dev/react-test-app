@@ -60,7 +60,7 @@ function ListPosts(props){
     return list;
 }
 
-export default class RestComponent extends Component {
+export default class BlogComponent extends Component {
 
     constructor(props){
 
@@ -80,8 +80,8 @@ export default class RestComponent extends Component {
         console.log('%c[COMPONENT CONSTRUCTOR INIT]:%c BLOG', 'background-color: blue;', {state: vm.state})
         
         vm.getPosts = function(params){
-            //vm.setState({isLoading: true});
-            vm.state.isLoading = true;
+            vm.setState({isLoading: true});
+            //vm.state.isLoading = true;
             
             let token = http.getToken();
             let { history } = this.props;            
@@ -106,6 +106,8 @@ export default class RestComponent extends Component {
                         post.user = users.userName(post.userId, vm.usersInfo).name
                     });
                     vm.setState({userList: vm.usersList, isLoading: false});
+                    //vm.state.userList  = vm.usersList;
+                    //vm.state.isLoading = false;
                     if(isConstructor){
                         console.log('%c[COMPONENT CONSTRUCTOR END]:%c BLOG', 'background-color: blue;', {state: vm.state});
                     }
@@ -113,6 +115,7 @@ export default class RestComponent extends Component {
                 },
                 err => {
                     vm.setState({isLoading: false});
+                    //vm.state.isLoading = false;
                     if(isConstructor){
                         console.log('%c[COMPONENT CONSTRUCTOR END]:%c BLOG', 'background-color: blue;', {Error: err});
                     }

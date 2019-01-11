@@ -1,0 +1,25 @@
+#profile-container {
+    width: 400px;
+    margin: 25px auto;
+    display: grid;
+    grid-template-columns: [left] 50% [right] 50%;
+    grid-auto-flow: column;
+    grid-column-gap: 5px;
+    grid-row-gap: 3px;
+}
+
+.profile-element{
+    text-align: left;
+    padding: 5px 15px;
+}
+
+.profile-element.left{
+    background-color: beige;
+    grid-column-start: left;
+}
+
+.profile-element.right{
+    background-color: #fdfdf2;
+    grid-column-start: right;
+    grid-row-start: auto;
+}
