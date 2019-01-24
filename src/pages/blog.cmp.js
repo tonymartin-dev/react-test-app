@@ -16,6 +16,8 @@ function ListPosts(props){
 
     let list = [];
 
+    var user = props.user
+
     //for (const post of props.posts) {
     for(let index = props.posts.length -1; index >= 0; index--){
 
@@ -39,20 +41,25 @@ function ListPosts(props){
                 </div>
             )}
             
-            <div className="post-footer">
-                <span><strong>Author:</strong> { post.user }</span>
-                {props.state.editPost !== post._id ?(
-                    <div className="btn-group">
-                        <button className="edit-post btn btn-ligth" onClick={() => props.postAPI.edit(post._id, editId)}>Edit</button>
-                        <button className="edit-post btn btn-info" onClick={() => props.postAPI.delete({id: post._id, index: index})}>Delete</button>
-                    </div>
-                ):(
-                    <div className="btn-group">
-                        <button className="edit-post btn btn-success" onClick={() => props.postAPI.save({id: post._id, userId: post.userId}, editId)}> Save </button>
-                        <button className="edit-post btn btn-secondary" onClick={() => props.postAPI.cancel(post._id, editId)}> Cancel </button>
-                    </div>
-                )}
-            </div>
+            {(post.userId === user._id) ? (
+                <div className="post-footer">
+                    {props.state.editPost !== post._id ?(
+                        <div className="btn-group">
+                            <button className="edit-post btn btn-ligth" onClick={() => props.postAPI.edit(post._id, editId)}>Edit</button>
+                            <button className="edit-post btn btn-info" onClick={() => props.postAPI.delete({id: post._id, index: index})}>Delete</button>
+                        </div>
+                    ):(
+                        <div className="btn-group">
+                            <button className="edit-post btn btn-success" onClick={() => props.postAPI.save({id: post._id, userId: post.userId}, editId)}> Save </button>
+                            <button className="edit-post btn btn-secondary" onClick={() => props.postAPI.cancel(post._id, editId)}> Cancel </button>
+                        </div>
+                    )}
+                </div>
+            ) : ( 
+                <div className="post-footer">
+                    <span><strong>Author:</strong> { post.user }</span>
+                </div>
+            ) }
 
         </li>)
     }
@@ -67,7 +74,7 @@ export default class BlogComponent extends Component {
         super(props);
         
         var vm =this;
-
+        
         vm.state = { 
             isLoading: true,
             editPost: null,
@@ -190,7 +197,8 @@ export default class BlogComponent extends Component {
                 body:{
                     title:  document.getElementById('new-post-title').value,
                     body:   document.getElementById('new-post-body').value,
-                    userId: document.getElementById('new-post-user-id').value
+                    userId: vm.props.user._id
+                    //userId: document.getElementById('new-post-user-id').value
                 }
             }
 
@@ -374,7 +382,9 @@ export default class BlogComponent extends Component {
 
             {/*FILTER*/}
             <div className="filter">
-                <span>Filter by userID: </span>
+                <div className="filter-title">
+                    <span>Filter by userID: </span>
+                </div>
                 <SelectComponent options={vm.state.userList} id={"post-user-id"} null="All"/>
                 <div className="btn-group">
                     <button className="btn btn-info" onClick={()=>getPostsFiltered()}>GET POSTS</button>
@@ -402,7 +412,7 @@ export default class BlogComponent extends Component {
             { vm.postList.length > 0 ? (                
                 <ul className="posts-list">
                     <i className="post-number">Showing {vm.postList.length} posts.</i>
-                    <ListPosts posts={vm.postList} postAPI={postAPI} state={this.state}/>                
+                    <ListPosts posts={vm.postList} postAPI={postAPI} state={vm.state} user={vm.props.user}/>
                 </ul>
             ):(
                 <div>No posts found</div>
