@@ -24,8 +24,7 @@ export default class UserMenuComponent extends Component {
                 </button>
                 <div className="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     <Link to="/profile" className="nav-link">Profile</Link>
-                    <Link to="/logout" className="nav-link">Log Out</Link>
-                    <div onClick={()=>this.logout()}>Logout2</div>
+                    <div className="nav-link" onClick={()=>this.logout()}>Logout2</div>
                 </div>
             </div>
         )
