@@ -2,37 +2,25 @@ import React, {Component} from 'react';
 import { Link } from 'react-router-dom';
 import UserMenuComponent from './user-menu.cmp';
 
+//Local imports
+import './header.css';
+
 export default class HeaderComponent extends Component {
 
     render() {
 
         return (<header id="header">
             <nav className="navbar navbar-expand-lg navbar-light bg-light">
-                <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                <div id="navbarSupportedContent">
                     <ul className="navbar-nav mr-auto">
-                        {/*<li className="nav-item">
-                            <Link to="/" className="nav-link">Home</Link>
-                        </li>*/}
                         <li className="nav-item">
                             <Link to="/blog" className="nav-link">Blog</Link>
                         </li>
-                        <li className="nav-item">
-                            <Link to="/player" className="nav-link">Player</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link to="/function" className="nav-link">Function</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link to="/rest" className="nav-link">Rest</Link>
-                        </li>
-                        <li className="nav-item">
-                            <Link to="/logout" className="nav-link">Log Out</Link>
-                        </li>
                     </ul>
-                    
-                        {this.props.user && this.props.user.name ? (
-                            <UserMenuComponent logIn={this.props.logIn} user={this.props.user} />
-                        ):(null)}
+                
+                    {this.props.user && this.props.user.name ? (
+                        <UserMenuComponent logIn={this.props.logIn} user={this.props.user} />
+                    ):(null)}
                 </div>
             </nav>
         </header>);

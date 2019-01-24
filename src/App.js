@@ -1,20 +1,17 @@
 //Dependency imports
 import React, { Component}  from 'react';
-import { Route }            from 'react-router-dom';
+import { Route, Switch }    from 'react-router-dom';
 
 //Components
 import HeaderComponent      from './common/header.cmp'
-import HomeComponent        from './pages/home.cmp';
 import LoginComponent       from './pages/login.cmp';
-import LogoutComponent      from './pages/logout.cmp';
 import SigninComponent      from './pages/signin.cmp';
-import PlayerComponent      from './pages/player.cmp';
 import ProfileComponent     from './pages/profile.cmp'
 import BlogComponent        from './pages/blog.cmp'
 import FooterComponent      from './common/footer.cmp'
 
 //Services
-import http         from './services/http.svc';
+import http from './services/http.svc';
 
 //Local imports
 import './App.css';
@@ -112,15 +109,14 @@ export default class App extends Component {
                         <HeaderComponent logIn={logIn} user={this.state.user}/>
                         
                         <div id="container">
-                            <Route path="/"   exact render={ props=> <LoginComponent logIn={logIn} loadUser={loadUser}  {...props} /> } />
-                            <Route path="/logout"   render={ props=><LogoutComponent logIn={logIn} loadUser={loadUser} msg="You have successfuly logged out."  {...props} /> } />
-        
-                            <Route path="/home"     logIn={logIn} component={ HomeComponent }/>
-                            <Route path="/player"   logIn={logIn} component={ PlayerComponent }/>
-                            <Route path="/function" render={ () => (<h1>Function instead of component</h1>) }/>
-                            <Route path="/blog"     logIn={logIn} component={ BlogComponent }/>
-                            <Route path="/profile"  render={ props=><ProfileComponent logIn={logIn} user={this.state.user}  {...props} /> } />
-                            <Route path="/signin"   logIn={logIn} component={ SigninComponent }/>
+                            <Switch>
+                                <Route path="/"   exact render={ props=> <LoginComponent logIn={logIn} loadUser={loadUser}  {...props} /> } />
+                                <Route path="/signin"   logIn={logIn} component={ SigninComponent }/>
+            
+                                <Route path="/blog"     logIn={logIn} component={ BlogComponent }/>
+                                <Route path="/profile"  render={ props=><ProfileComponent logIn={logIn} user={this.state.user}  {...props} /> } />
+                                <Route render={ () => (<h1>404</h1>) } />
+                            </Switch>
                         </div>
                     </div>
                 ):(
