@@ -1,5 +1,4 @@
 import React from 'react';
-import './loader.css';
 
 /**
  * @param {Array} props.optionsList Array of objects. Each object will have the following structure: {name: 'text in combo', value: 'value when selected'}

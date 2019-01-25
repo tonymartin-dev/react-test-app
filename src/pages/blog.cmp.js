@@ -1,71 +1,17 @@
 import React, {Component} from 'react';
 
 //Components
-import SelectComponent  from '../components/select.cmp'
+import SelectComponent      from '../components/select.cmp'
+import ListPostsComponent   from '../components/list-posts.cmp'
 
 //Services
-import http         from '../services/http.svc';
-import users        from '../services/users.svc';
-import ModalService from '../components/modal/modal.svc'
-import LoaderService from '../components/loader/loader.svc'
+import http             from '../services/http.svc';
+import users            from '../services/users.svc';
+import ModalService     from '../components/modal/modal.svc'
+import LoaderService    from '../components/loader/loader.svc'
 
 //Local imports
 import './blog.css';
-
-function ListPosts(props){
-
-    let list = [];
-
-    var user = props.user
-
-    //for (const post of props.posts) {
-    for(let index = props.posts.length -1; index >= 0; index--){
-
-        let post = props.posts[index];
-        //console.log(post)
-        let editId = {
-            title:  'title-edit-' + post._id,
-            body:   'body-edit-' + post._id
-        }
-        list.push(<li key={post._id}>
-            
-            {props.state.editPost === post._id ? (
-                <div className="post">
-                    <input className="title-edit" id={editId.title} defaultValue={ post.title } placeholder="Title"></input>
-                    <textarea className="body-edit" id={editId.body} defaultValue={ post.body } placeholder="Message"></textarea>
-                </div>
-            ) : (
-                <div className="post">
-                    <h4>{ post.title }</h4>
-                    <p>{ post.body }</p>
-                </div>
-            )}
-            
-            {(post.userId === user._id) ? (
-                <div className="post-footer">
-                    {props.state.editPost !== post._id ?(
-                        <div className="btn-group">
-                            <button className="edit-post btn btn-ligth" onClick={() => props.postAPI.edit(post._id, editId)}>Edit</button>
-                            <button className="edit-post btn btn-info" onClick={() => props.postAPI.delete({id: post._id, index: index})}>Delete</button>
-                        </div>
-                    ):(
-                        <div className="btn-group">
-                            <button className="edit-post btn btn-success" onClick={() => props.postAPI.save({id: post._id, userId: post.userId}, editId)}> Save </button>
-                            <button className="edit-post btn btn-secondary" onClick={() => props.postAPI.cancel(post._id, editId)}> Cancel </button>
-                        </div>
-                    )}
-                </div>
-            ) : ( 
-                <div className="post-footer">
-                    <span><strong>Author:</strong> { post.user }</span>
-                </div>
-            ) }
-
-        </li>)
-    }
-
-    return list;
-}
 
 export default class BlogComponent extends Component {
 
@@ -358,10 +304,171 @@ export default class BlogComponent extends Component {
         }
         
         let postAPI = {
-            edit: editPost,
-            save: savePost,
-            delete: showDeleteModal,
-            cancel: cancelPostEdit
+            create: function(){
+
+                let config = {
+                    service: 'posts',
+                    method:  'POST',
+                    headers: {
+                        Authorization: 'Bearer ' + http.getToken()
+                    },
+                    body:{
+                        title:  document.getElementById('new-post-title').value,
+                        body:   document.getElementById('new-post-body').value,
+                        userId: vm.props.user._id
+                        //userId: document.getElementById('new-post-user-id').value
+                    }
+                }
+    
+                console.log('Creating post: ', {data: config.body});
+                
+                vm.setState({createPost: true, isLoading: true})
+    
+                http.request('http://localhost:3100/', config).then(
+                    res => {
+                        let newPost = res;
+                        newPost.user = users.userName(config.body.userId, vm.usersInfo).name;
+                        newPost.id = vm.postList.length +1;
+                        vm.postList.push(newPost);
+                        vm.setState({createPost: false, isLoading: false});
+                        console.log('[POSTS UPDATED]', vm.postList);
+                    }
+                )
+    
+            },
+            edit: function(postId){
+                vm.setState(() => {
+                    return {
+                        editPost: postId
+                    };
+                });
+            },
+            cancelEdit: function(){
+                vm.setState(() => {
+                    return {
+                        editPost: null
+                    };
+                });
+            },
+            save: function(post, element){
+                let edited = {
+                    title:  document.getElementById(element.title).value,
+                    body:   document.getElementById(element.body).value
+                }
+                let original = {
+                    title:  document.getElementById(element.title).defaultValue,
+                    body:   document.getElementById(element.body).defaultValue
+                }
+    
+                if(edited.title.length === 0 || edited.body.length === 0){
+                    alert('Please, insert a title and a body for your post.')
+                    return;
+                }
+    
+                if(edited.title === original.title && edited.body === original.body){
+                    alert('No changes detected');
+                    return;
+                }
+                
+                console.log('Editing post #'+post.id+': ', edited);
+                
+                vm.setState({isLoading: true});
+                
+                let url = 'http://localhost:3100/';
+                let config = {
+                    method: 'PUT',
+                    service: 'posts/?id='+post.id,
+                    headers: {
+                        Authorization: 'Bearer ' + http.getToken()
+                    },
+                    body: {
+                        title:  edited.title,
+                        body:   edited.body,
+                        userId: post.userId
+                    }
+                }
+                http.request(url, config).then(
+                    res => {
+    
+                        for (let i = 0; i < vm.postList.length; i++) {
+                            let element = vm.postList[i];
+                            if(element.id === post._id){
+    
+                                element.title = res.title;
+                                element.body = res.body;
+    
+                                vm.setState(() => {
+                                    return {
+                                        isLoading: false,
+                                        editPost: null
+                                    }
+                                });
+    
+                                return;
+                            }
+                            
+                        }
+                        
+    
+                    },
+                    () => {
+    
+                        alert('Error saving your post. Please, try it again later.')
+                        vm.setState({isLoading: false});                    
+                    }
+                );
+            },
+            deleteModal: function(postData){
+                var config ={
+                    title:       'Delete Post',
+                    body:        'Are you sure you want to delete this post?',
+                    isError:     true,
+                    showCancel:  true,
+                    data:        postData,
+                }
+                vm.modal.openSimpleModal(config).then(
+                    res => {
+                        console.log('Modal closed', res)
+                        this.delete(res.id, res.index);
+                    },
+                    () => {
+                        console.log('Modal dismissed')
+                    }
+                );
+            },
+            delete: function deletePost(postId, postIndex){
+                vm.setState({isLoading: true})
+                let url = 'http://localhost:3100/';
+                let config = {
+                    method: 'DELETE',
+                    service: 'posts/'+postId,
+                    headers: {
+                        Authorization: 'Bearer ' + http.getToken()
+                    },
+                }
+                http.request(url, config).then(
+                    ()=>{
+                        vm.postList.splice(postIndex, 1);
+                        console.log('   [POST DELETED] #'+postId, vm.postList)
+                        vm.setState({isLoading: false});
+                        var config ={
+                            title:       'Delete Post',
+                            body:        'Your post was deleted.'
+                        }
+                        vm.modal.openSimpleModal(config)
+                        vm.setState({isLoading: false});
+                    },
+                    ()=>{
+                        vm.setState({isLoading: false});
+                        var config ={
+                            title:      'Delete Post',
+                            body:       'There was an error. Your post couldn\'t be deleted.',
+                            isError:    true
+                        }
+                        vm.modal.openSimpleModal(config)
+                    }
+                )
+            }
         }
 
         function getPostsFiltered(){
@@ -375,12 +482,9 @@ export default class BlogComponent extends Component {
         }
 
         return <div id="Blog">
-            
-            {/*<LoaderComponent loading={this.state.isLoading} />*/}
-            
+                        
             <h1>Bl-cmp</h1>
 
-            {/*FILTER*/}
             <div className="filter">
                 <div className="filter-title">
                     <span>Filter by userID: </span>
@@ -399,7 +503,7 @@ export default class BlogComponent extends Component {
                     <input className="title-edit" id="new-post-title" placeholder="Title"></input>
                     <textarea className="body-edit" id="new-post-body" placeholder="Message"></textarea>
                     <div className="post-footer">
-                        <strong>Author: </strong><SelectComponent options={vm.state.userList} id={"new-post-user-id"} />
+                        <strong>Author: </strong> {vm.props.user.name}
                         <div className="btn-group">
                             <button className="btn btn-success" onClick={() => createPost() }> Post </button>
                             <button className="btn btn-secondary" onClick={() =>  vm.setState({createPost: false})}> Cancel </button>
@@ -412,7 +516,7 @@ export default class BlogComponent extends Component {
             { vm.postList.length > 0 ? (                
                 <ul className="posts-list">
                     <i className="post-number">Showing {vm.postList.length} posts.</i>
-                    <ListPosts posts={vm.postList} postAPI={postAPI} state={vm.state} user={vm.props.user}/>
+                    <ListPostsComponent posts={vm.postList} postAPI={postAPI} state={vm.state} user={vm.props.user}/>
                 </ul>
             ):(
                 <div>No posts found</div>
