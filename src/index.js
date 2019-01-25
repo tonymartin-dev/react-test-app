@@ -6,7 +6,6 @@ import * as serviceWorker from './serviceWorker';
 
 
 //Local imports
-//import './Base.js';
 import './index.css';
 
 //Components

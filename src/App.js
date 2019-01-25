@@ -104,36 +104,26 @@ export default class App extends Component {
         return (
             <div>
 
-                {vm.state.isLoggedIn === true ? (
+                {vm.state.isLoggedIn === true ? (   //If loggedIn, show components
                     <div>
                         <HeaderComponent logIn={logIn} user={this.state.user}/>
                         
                         <div id="container">
                             <Switch>
                                 <Route path="/"   exact render={ props=> <LoginComponent logIn={logIn} loadUser={loadUser}  {...props} /> } />
-                                <Route path="/signin"   logIn={logIn} component={ SigninComponent }/>
-            
                                 <Route path="/blog"     render={ props=><BlogComponent user={this.state.user} {...props} /> } />
-                                {/*<Route path="/blog"     logIn={logIn} loadUser={loadUser} component={ BlogComponent }/>*/}
                                 <Route path="/profile"  render={ props=><ProfileComponent logIn={logIn} user={this.state.user}  {...props} /> } />
-                                <Route render={ () => (<h1>404</h1>) } />
+                                <Route render={ () => (<h1>404: Page not found</h1>) } />
                             </Switch>
                         </div>
                     </div>
-                ):(
+                ):(                                 //If no loggedIn, only allow login and singin components.
                     <div id="container">
-                        {vm.state.isLoggedIn === false ? (
-                                <Route path="/"   render={ props=><LoginComponent logIn={logIn} loadUser={loadUser}  {...props} /> }/>
-                        ):null}
-                        {vm.state.isLoggedIn === 'expired' ? (
-                                <Route path="/"   render={ props=><LoginComponent logIn={logIn} loadUser={loadUser} msg="Your session expired. Please, log in again."  {...props} /> }/>
-                        ):null}
-                        {vm.state.isLoggedIn === 'error' ? (
-                                <Route path="/"   render={ props=><LoginComponent logIn={logIn} loadUser={loadUser} msg="There was an error with your session. Please, try again later."  {...props} /> }/>
-                        ):null}
-                        {vm.state.isLoggedIn === 'loggedOut' ? (
-                                <Route path="/"   render={ props=><LoginComponent logIn={logIn} loadUser={loadUser} msg="You have successfuly logged out."  {...props} /> }/>
-                        ):null}
+                        <Switch>
+                            <Route path="/" exact   render={ props=><LoginComponent logIn={logIn} loadUser={loadUser} status={vm.state.isLoggedIn} {...props} /> }/>
+                            <Route path="/signin"   logIn={logIn} component={ SigninComponent }/>
+                            <Route render={ props => <LoginComponent logIn={logIn} loadUser={loadUser} status={vm.state.isLoggedIn} {...props} /> } />
+                        </Switch>
                     </div>
                 )}
 
