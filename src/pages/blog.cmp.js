@@ -441,7 +441,10 @@ export default class BlogComponent extends Component {
                 let url = 'http://localhost:3100/';
                 let config = {
                     method: 'DELETE',
-                    service: 'posts/'+postId,
+                    service: 'posts',
+                    params: {
+                        id: postId
+                    },
                     headers: {
                         Authorization: 'Bearer ' + http.getToken()
                     },
