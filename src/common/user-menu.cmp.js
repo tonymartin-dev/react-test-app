@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
 import { Link } from 'react-router-dom';
 
+//Services
+import http             from '../services/http.svc';
+
 //Local imports
 import './user-menu.css';
 
@@ -12,6 +15,10 @@ export default class UserMenuComponent extends Component {
     }
 
     logout(){
+        let token = http.getToken();
+        if (token){
+            document.cookie = 'token=; expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+        }
         this.props.logIn(false);
     }
 

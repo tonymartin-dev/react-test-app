@@ -7,3 +7,4 @@
 3. Logout
     * cookie is not being removed
     * Logout message is not being displayed in login page
+4. Managing errors
