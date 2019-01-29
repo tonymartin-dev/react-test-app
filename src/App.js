@@ -24,7 +24,7 @@ export default class App extends Component {
 
         var vm = this;
         
-        vm.state = { user: null, isLoggedIn: false };
+        vm.state = { user: null, status: false };
        
         let config = {
             method: 'POST',
@@ -41,30 +41,30 @@ export default class App extends Component {
                             console.log('[REFRESH TOKEN SUCCESS]', res);
                             document.cookie = 'token='+token;
                             vm.setState({user: res.user});
-                            vm.setState({isLoggedIn: true})
+                            vm.setState({status: true})
                         } else {
                             console.log('[REFRESH TOKEN ERROR]. Deleting cookie...', res);
                             document.cookie = 'token=;expires=Thu, 01 Jan 1970 00:00:01 GMT;';
                             if(vm.refreshTokenInterval)
                                 window.clearInterval(vm.refreshTokenInterval)
                             if(isFirst)
-                                vm.setState({isLoggedIn: false})
+                                vm.setState({status: false})
                             else
-                                vm.setState({isLoggedIn: 'expired'})
+                                vm.setState({status: 'expired'})
                         }
                     },
                     err=> {
                         console.log('[REFRESH TOKEN ERROR] Server error.', err)
                         if(vm.refreshTokenInterval)
                             window.clearInterval(vm.refreshTokenInterval)
-                        vm.setState({isLoggedIn: 'error'})
+                        vm.setState({status: 'error'})
                     }
                 );
             } else{
                 console.log('[REFRESH TOKEN ERROR]. No token to refresh')
                 if(vm.refreshTokenInterval)
                     window.clearInterval(vm.refreshTokenInterval)
-                vm.setState({isLoggedIn: false})
+                vm.setState({status: false})
             }
             
         }
@@ -81,16 +81,20 @@ export default class App extends Component {
         function loadUser(user){
             vm.setState({user: user});
         }
+
+        function setStatus(status){
+            vm.setState({status: status});
+        }
         
         function logIn(refresh){
             if(refresh ===undefined) refresh = true;
             if(refresh){
-                vm.setState({isLoggedIn: true});
+                vm.setState({status: true});
                 //vm.refreshToken();
                 window.clearInterval(vm.refreshTokenInterval)
                 vm.refreshTokenInterval = window.setInterval(vm.refreshToken,270000);                
             } else {
-                vm.setState({isLoggedIn: 'loggedOut'});
+                vm.setState({status: 'loggedOut'});
                 window.clearInterval(vm.refreshTokenInterval)
             }
         }
@@ -98,7 +102,7 @@ export default class App extends Component {
         return (
             <div>
 
-                {vm.state.isLoggedIn === true ? (   //If loggedIn, show components and header
+                {vm.state.status === true ? (   //If loggedIn, show components and header
                     <div>
                         <HeaderComponent logIn={logIn} user={this.state.user}/>
                         
@@ -114,9 +118,9 @@ export default class App extends Component {
                 ):(                                 //If no loggedIn, only allow login and singin components.
                     <div id="container">
                         <Switch>
-                            <Route path="/" exact   render={ props=><LoginComponent logIn={logIn} loadUser={loadUser} status={vm.state.isLoggedIn} {...props} /> }/>
-                            <Route path="/signup"   logIn={logIn} component={ SignupComponent }/>
-                            <Route render={ props => <LoginComponent logIn={logIn} loadUser={loadUser} status={vm.state.isLoggedIn} {...props} /> } />
+                            <Route path="/" exact   render={ props=><LoginComponent logIn={logIn} loadUser={loadUser} status={vm.state.status} {...props} /> }/>
+                            <Route path="/signup"   render={ props=><SignupComponent logIn={logIn} setStatus={setStatus} {...props} /> }/>
+                            <Route render={ props => <LoginComponent logIn={logIn} loadUser={loadUser} status={vm.state.status} {...props} /> } />
                         </Switch>
                     </div>
                 )}

@@ -13,14 +13,41 @@ class ProfileComponent extends React.Component {
         this.state = {
             editProfile: false
         }
+        
+        this.userData = {...this.props.user}
+        
+        this.handleChange = this.handleChange.bind(this);
+        this.submit = this.submit.bind(this);        
     }
 
-    editProfile(bool){
+
+    editProfile(){
         this.setState(prevState => {        //To use the previous state, we don't pass an object as argument of setState(). Instead, we use a function whose argument is the previous state
             return {
                 editProfile: !prevState.editProfile
             };
         });
+    }
+
+    handleChange(event) {
+        this.userData[event.currentTarget.id]= event.target.value;
+    }
+
+    submit(){
+        var vm = this;
+        var config= {
+            method: 'PUT',
+            service: 'users',
+            body: this.userData
+        }
+        http.request(config).then(
+            ()=>{
+                vm.editProfile();
+            },
+            ()=>{
+                console.log('KO');
+            }
+        )
     }
      
     render(){
@@ -59,14 +86,14 @@ class ProfileComponent extends React.Component {
                                 <div className="profile-element left">Phone number:</div>
                                 <div className="profile-element left">User name:</div>
                                 <div className="profile-element left">Website:</div>
-                                <input defaultValue={vm.props.user.name}></input>
-                                <input defaultValue={vm.props.user.email}></input>
-                                <input defaultValue={vm.props.user.phone}></input>
-                                <input defaultValue={vm.props.user.username}></input>
-                                <input defaultValue={vm.props.user.website}></input>
+                                <input defaultValue={vm.userData.name} id="name" onChange={this.handleChange}></input>
+                                <input defaultValue={vm.userData.email} id="email" onChange={this.handleChange}></input>
+                                <input defaultValue={vm.userData.phone} id="phone" onChange={this.handleChange}></input>
+                                <input defaultValue={vm.userData.username} id="username" onChange={this.handleChange}></input>
+                                <input defaultValue={vm.userData.website} id="website" onChange={this.handleChange}></input>
                             </div>
 
-                            <button className="btn" onClick={()=>vm.editProfile()}>Save</button>
+                            <button className="btn" onClick={()=>vm.submit()}>Save</button>
                             <button className="btn" onClick={()=>vm.editProfile()}>Cancel</button>
 
                         </div>
@@ -79,11 +106,11 @@ class ProfileComponent extends React.Component {
                                 <div className="profile-element left">Phone number:</div>
                                 <div className="profile-element left">User name:</div>
                                 <div className="profile-element left">Website:</div>
-                                <div className="profile-element right">{vm.props.user.name}</div>
-                                <div className="profile-element right">{vm.props.user.email}</div>
-                                <div className="profile-element right">{vm.props.user.phone}</div>
-                                <div className="profile-element right">{vm.props.user.username}</div>
-                                <div className="profile-element right">{vm.props.user.website}</div>
+                                <div className="profile-element right">{vm.userData.name}</div>
+                                <div className="profile-element right">{vm.userData.email}</div>
+                                <div className="profile-element right">{vm.userData.phone}</div>
+                                <div className="profile-element right">{vm.userData.username}</div>
+                                <div className="profile-element right">{vm.userData.website}</div>
                             </div>
                             
                             <button className="btn" onClick={()=>vm.editProfile()}>EDIT</button>

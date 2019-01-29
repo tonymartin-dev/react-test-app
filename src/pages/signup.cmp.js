@@ -1,6 +1,7 @@
-import React from 'react';
+import React        from 'react';
 import http         from '../services/http.svc';
 import ModalService from '../components/modal/modal.svc'
+import { Link }     from 'react-router-dom';
 
 class SignupComponent extends React.Component {
 
@@ -10,6 +11,7 @@ class SignupComponent extends React.Component {
     
         this.handleChange = this.handleChange.bind(this);
         this.submit = this.submit.bind(this);
+        this.goBack = this.goBack.bind(this);
     }
 
     credentials = {}
@@ -74,11 +76,17 @@ class SignupComponent extends React.Component {
         
     }
 
+    goBack(){
+        this.props.setStatus(false);
+        let{history} = this.props;
+        history.push('/');
+    }
+
     
     render() {
         console.log('Login');
 
-        return (<div id="player">
+        return (<div id="login" className="container">
             <h1>Sign Up</h1>
 
             <h5>Account data</h5>            
@@ -121,9 +129,9 @@ class SignupComponent extends React.Component {
                 <input type="text" className="form-control" id="phone" name="phone" value={this.credentials.value} onChange={this.handleChange} aria-describedby="basic-addon3"/>
             </div>
 
-
-            <div>
-                <input className="btn" type="submit" value="Log In" onClick={this.submit}/>
+            <div className="btn-group">
+                <input className="btn btn-primary" type="submit" value="Sign Up!" onClick={this.submit}/>
+                <div className="nav-link" onClick={()=>this.goBack()} className="btn btn-secondary">Bring me back to Log In!</div>
             </div>
 
         </div>)
