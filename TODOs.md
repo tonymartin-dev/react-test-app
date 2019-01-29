@@ -5,7 +5,7 @@
     * add edit info functionality
     * "SingUp" and "return to login" buttons
 3. Logout
-    * cookie is not being removed
-    * Logout message is not being displayed in login page
+    * *DONE:* cookie is not being removed
+    * *DONE:* Logout message is not being displayed in login page
 4. Managing errors
     * 401 => open a modal and, when dismissing, force a refresh token and redirect to login page if it's expired.

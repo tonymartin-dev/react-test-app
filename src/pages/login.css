@@ -18,3 +18,43 @@
     color: white;
     width: fit-content;
 }
+
+#login-msg{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+#login-msg .close-btn {
+	position: relative;
+	width: 27px;
+	height: 27px;
+	border: 2px solid black;
+	background-color: transparent;
+	border-radius: 50%;
+    cursor: pointer;
+    transition: 0.5s;
+}
+#login-msg .close-btn:hover {
+	background-color: white;
+}
+#login-msg .close-btn::before, 
+#login-msg .close-btn::after {
+	position: absolute;
+	top: 10px;
+	left: 5px;
+	width: 13px;
+	height: 3px;
+	content: "";
+	background-color: black;
+}
+#login-msg .close-btn::before {
+	-ms-transform: rotate(-45deg);
+	-webkit-transform: rotate(-45deg);
+	transform: rotate(-45deg);
+}
+#login-msg .close-btn::after {
+	-ms-transform: rotate(45deg);
+	-webkit-transform: rotate(45deg);
+	transform: rotate(45deg);
+}

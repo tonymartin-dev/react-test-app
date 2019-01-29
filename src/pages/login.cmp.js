@@ -11,7 +11,10 @@ class LoginComponent extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = { errorMessage: null };
+        this.state = { 
+            errorMessage: null,
+            status: props.status
+        };
     
         this.handleChange = this.handleChange.bind(this);
         this.submit = this.submit.bind(this);        
@@ -20,7 +23,6 @@ class LoginComponent extends React.Component {
     credentials = { username: '', password: '' }
 
     handleChange(event) {
-        //this.setState({ [event.currentTarget.id]: event.target.value});
         this.credentials[event.currentTarget.id]= event.target.value;
     }
 
@@ -64,13 +66,30 @@ class LoginComponent extends React.Component {
     render() {
         console.log('Login');
 
-        var vm = this;        
+        var vm = this;
+        
+        var statusMsg;
+        
+        switch (vm.state.status) {
+            case 'loggedOut':
+                statusMsg = 'You have successfully logged out.';
+                break;
+            case 'expired':
+                statusMsg = 'Your session expired. Please, log in again.';
+                break;
+            default:
+                statusMsg = null;
+                break;
+        }
 
         return (<div id="login" className="container">
             <h1>Login</h1>
             
-            {this.props.msg ? (
-                <div className="alert alert-danger" role="alert">{this.props.msg}</div>
+            {statusMsg ? (
+                <div id="login-msg" className="alert alert-danger" role="alert">
+                    {statusMsg}
+                    <div className="close-btn" onClick={()=> vm.setState({status: null})}></div>
+                </div>
             ):null}
 
             <div className="input-group mb-3">

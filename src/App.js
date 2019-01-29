@@ -98,7 +98,7 @@ export default class App extends Component {
         return (
             <div>
 
-                {vm.state.isLoggedIn === true ? (   //If loggedIn, show components
+                {vm.state.isLoggedIn === true ? (   //If loggedIn, show components and header
                     <div>
                         <HeaderComponent logIn={logIn} user={this.state.user}/>
                         
