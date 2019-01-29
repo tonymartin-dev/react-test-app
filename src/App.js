@@ -25,22 +25,16 @@ export default class App extends Component {
         var vm = this;
         
         vm.state = { user: null, isLoggedIn: false };
-
-        let token = http.getToken();
-        
-        let url = 'http://localhost:3100/';
+       
         let config = {
             method: 'POST',
-            service: 'users/refreshToken',
-            headers: {
-                Authorization: 'Bearer ' + token
-            }
+            service: 'users/refreshToken'
         }
 
         vm.refreshToken =  function(isFirst){
             let token = http.getToken();
             if(token){
-                http.request(url, config).then(
+                http.request(config).then(
                     res => {
                         var token = res.token;
                         if(token){

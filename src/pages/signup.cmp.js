@@ -40,7 +40,7 @@ class SignupComponent extends React.Component {
 
         console.log('SignIn: ', config)
         
-        http.request('http://localhost:3100/', config).then(
+        http.request(config).then(
             res => {
                 console.log('[SIGN IN SUCCESS]', res);
                 var config ={

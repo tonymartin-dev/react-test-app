@@ -9,9 +9,12 @@ function test(){
  * SUPPORTED ITEMS
  * @param {String} config.service = Service name
  */
-function request(url, config){
-            
-    //Set request method
+function request(config){
+
+    //Set default values
+    let url = config.url || 'http://localhost:3100/';
+    let headers = config.headers || {};
+    headers.Authorization = headers.Authorization || 'Bearer ' + getToken();
     let method = config.method || 'GET';
     
     /**
@@ -26,9 +29,9 @@ function request(url, config){
         baseUrl = url;
     }
     
-    //Add params for GET requests (if any)
+    //Add params for GET or PUT requests (if any)
     let requestUrl;
-    if (method === 'GET' && config.params){
+    if ((method === 'GET' || method === 'PUT') && config.params){
         
         requestUrl = baseUrl + '?';
         
@@ -54,10 +57,7 @@ function request(url, config){
     requestConfig.method = method;
 
     //Add headers
-    requestConfig.headers = {};
-    if(config.headers){
-        requestConfig.headers = config.headers;
-    }
+    requestConfig.headers = headers || {};
     if(!requestConfig.headers["Content-Type"]){
         requestConfig.headers["Content-Type"] = "application/json; charset=utf-8";
     }

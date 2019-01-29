@@ -6,14 +6,10 @@ var users = [];
 function getUsers(){
 
         let config = { 
-            method: 'GET', 
-            service: 'users',
-            headers: {
-                Authorization: 'Bearer ' + http.getToken()
-            }
+            service: 'users'
         }
 
-        return http.request('http://localhost:3100/', config)
+        return http.request(config)
 
 
 }

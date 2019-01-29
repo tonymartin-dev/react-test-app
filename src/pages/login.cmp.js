@@ -39,7 +39,7 @@ class LoginComponent extends React.Component {
             }
         }
 
-        http.request('http://localhost:3100/', config).then(
+        http.request(config).then(
             res => {
                 console.log('[LOGIN SUCCESS]', res);
                 

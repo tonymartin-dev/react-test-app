@@ -45,20 +45,14 @@ export default class BlogComponent extends Component {
             let token = http.getToken();
             let { history } = this.props;            
             if(!token)  history.push('/login');
-            
-            let url = 'http://localhost:3100/';
-            
+
             let config = {
-                method: 'GET',
                 service: 'posts',
                 params: {
                     userId: params && params.userId ? params.userId : null
-                },
-                headers: {
-                    Authorization: 'Bearer ' + token
                 }
             }
-            http.request(url, config).then(
+            http.request(config).then(
                 res => {
                     vm.postList = res;
                     vm.postList.forEach(function(post){
@@ -153,14 +147,10 @@ export default class BlogComponent extends Component {
                 let config = {
                     service: 'posts',
                     method:  'POST',
-                    headers: {
-                        Authorization: 'Bearer ' + http.getToken()
-                    },
                     body:{
                         title:  document.getElementById('new-post-title').value,
                         body:   document.getElementById('new-post-body').value,
                         userId: vm.props.user._id
-                        //userId: document.getElementById('new-post-user-id').value
                     }
                 }
     
@@ -168,7 +158,7 @@ export default class BlogComponent extends Component {
                 
                 vm.setState({creatingPost: true, isLoading: true})
     
-                http.request('http://localhost:3100/', config).then(
+                http.request(config).then(
                     res => {
                         let newPost = res;
                         newPost.user = users.userName(config.body.userId, vm.usersInfo).name;
@@ -218,12 +208,11 @@ export default class BlogComponent extends Component {
                 
                 vm.setState({isLoading: true});
                 
-                let url = 'http://localhost:3100/';
                 let config = {
                     method: 'PUT',
-                    service: 'posts/?id='+post.id,
-                    headers: {
-                        Authorization: 'Bearer ' + http.getToken()
+                    service: 'posts',
+                    params: {
+                        id: post.id
                     },
                     body: {
                         title:  edited.title,
@@ -231,7 +220,7 @@ export default class BlogComponent extends Component {
                         userId: post.userId
                     }
                 }
-                http.request(url, config).then(
+                http.request(config).then(
                     modifiedPost => {
 
                         for (let i = 0; i < vm.postList.length; i++) {
@@ -282,18 +271,14 @@ export default class BlogComponent extends Component {
             },
             delete: function deletePost(postId, postIndex){
                 vm.setState({isLoading: true})
-                let url = 'http://localhost:3100/';
                 let config = {
                     method: 'DELETE',
                     service: 'posts',
                     body: {
                         id: postId
-                    },
-                    headers: {
-                        Authorization: 'Bearer ' + http.getToken()
                     }
                 }
-                http.request(url, config).then(
+                http.request(config).then(
                     ()=>{
                         vm.postList.splice(postIndex, 1);
                         console.log('   [POST DELETED] #'+postId, vm.postList)

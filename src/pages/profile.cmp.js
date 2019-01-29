@@ -27,21 +27,15 @@ class ProfileComponent extends React.Component {
 
         var vm = this;
 
-        let url = 'http://localhost:3100/';
-
         function getUserData(){
             console.log('USER LOADED')
             let config = {
-                method: 'GET',
                 service: 'users',
                 params: {
                     id: vm.props.user._id
-                },
-                headers: {
-                    Authorization: 'Bearer ' + http.getToken()
                 }
             }
-            http.request(url, config).then(
+            http.request(config).then(
                 res => {
                     
                 },
