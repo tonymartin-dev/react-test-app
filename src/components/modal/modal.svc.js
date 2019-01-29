@@ -5,10 +5,10 @@ import "./modal.css";
 
 class ModalInstance {
 
-    constructor(props){
+    /*constructor(props){
         console.log(props);
         this.props = props;
-    }
+    }*/
 
     openSimpleModal(config){
 
@@ -97,11 +97,13 @@ class ModalInstance {
         var promise = new Promise(function(resolve, reject){
 
             let modalProps = {
-                title:  config.title,
-                body:   config.body,
-                data:   config.data,
-                showCancel: config.showCancel || false,
+                title:      config.title,
+                body:       config.body,
+                data:       config.data,
                 isError:    config.isError || false,
+                showHeader: config.showHeader === false ? false : true,
+                showFooter: config.shoeFooter === false ? false : true,
+                showCancel: config.showCancel || false,
                 backdrop:   config.backdrop === false ? false : true
             }
 

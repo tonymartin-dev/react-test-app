@@ -108,7 +108,7 @@ export default class App extends Component {
                         <div id="container">
                             <Switch>
                                 <Route path="/"   exact render={ props=> <LoginComponent logIn={logIn} loadUser={loadUser}  {...props} /> } />
-                                <Route path="/blog"     render={ props=><BlogComponent logIn={logIn} user={this.state.user} {...props} /> } />
+                                <Route path="/blog"     render={ props=><BlogComponent user={this.state.user} {...props} /> } />
                                 <Route path="/profile"  render={ props=><ProfileComponent logIn={logIn} user={this.state.user}  {...props} /> } />
                                 <Route render={ () => (<h1>404: Page not found</h1>) } />
                             </Switch>

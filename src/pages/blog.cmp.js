@@ -3,7 +3,6 @@ import React, {Component} from 'react';
 //Components
 import SelectComponent      from '../components/select.cmp'
 import ListPostsComponent   from '../components/list-posts.cmp'
-import ProfileComponent from '../pages/profile.cmp'
 
 //Services
 import http             from '../services/http.svc';
@@ -101,7 +100,7 @@ export default class BlogComponent extends Component {
                 vm.setState({isLoading: false});
                 console.log('ERROR: ' + err);
                 if(err.message === 'Unauthorized'){
-                    var modal = ModalService(vm.props);
+                    var modal = ModalService();
                     var config ={
                         title:       'Unauthorized',
                         body:        'Your session expired. Please, log in again.',
@@ -312,26 +311,6 @@ export default class BlogComponent extends Component {
             }
         }
 
-        function ComponentModal(){
-            var config ={
-                title:       'Delete Post',
-                body:        'Are you sure you want to delete this post?',
-                isError:     true,
-                showCancel:  true,
-                data:        'data here',
-                component:   ProfileComponent
-            }
-            vm.modal.openComponentModal(config, vm.props).then(
-                res => {
-                    console.log('Modal closed', res)
-                    this.delete(res.id, res.index);
-                },
-                () => {
-                    console.log('Modal dismissed')
-                }
-            );
-        }
-
         return <div id="Blog">
                         
             <h1>Bl-cmp</h1>
@@ -344,7 +323,6 @@ export default class BlogComponent extends Component {
                 <div className="btn-group">
                     <button className="btn btn-info" onClick={()=>postAPI.get()}>GET POSTS</button>
                     <button className="btn btn-light" onClick={()=>vm.setState({creatingPost: true})}>NEW POST</button>
-                    <button className="btn btn-light" onClick={()=>ComponentModal()}>MODAL</button>
                 </div>
             </div>
 
