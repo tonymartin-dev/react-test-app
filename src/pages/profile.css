@@ -2,10 +2,9 @@
     width: 400px;
     margin: 25px auto;
     display: grid;
-    grid-template-columns: [left] 50% [right] 50%;
+    grid-template-columns: [left] max-content [right] auto;
     grid-auto-flow: column;
-    grid-column-gap: 5px;
-    grid-row-gap: 3px;
+    grid-gap: 3px 5px;
 }
 
 .profile-element{
@@ -14,12 +13,12 @@
 }
 
 .profile-element.left{
-    background-color: beige;
+    background-color: rgb(191, 230, 255);
     grid-column-start: left;
 }
 
 .profile-element.right{
-    background-color: #fdfdf2;
+    background-color: rgb(247, 247, 247);
     grid-column-start: right;
     grid-row-start: auto;
 }
