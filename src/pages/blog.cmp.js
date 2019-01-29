@@ -286,12 +286,12 @@ export default class BlogComponent extends Component {
                 let config = {
                     method: 'DELETE',
                     service: 'posts',
-                    params: {
+                    body: {
                         id: postId
                     },
                     headers: {
                         Authorization: 'Bearer ' + http.getToken()
-                    },
+                    }
                 }
                 http.request(url, config).then(
                     ()=>{
