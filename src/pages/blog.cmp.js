@@ -55,6 +55,7 @@ export default class BlogComponent extends Component {
             http.request(config).then(
                 res => {
                     vm.postList = res;
+                    vm.postList.sort(vm.orderPosts);
                     vm.postList.forEach(function(post){
                         post.user = users.userName(post.userId, vm.usersInfo).name
                     });
@@ -116,6 +117,12 @@ export default class BlogComponent extends Component {
             }
         )
 
+        vm.orderPosts = function(a, b){
+            if(a.date > b.date) return 1;
+            if(a.date < b.date) return -1;
+            return 0;
+        }
+
         //Create a new modal instance.
         vm.modal = ModalService();
         console.log('Modal instance', vm.modal)
@@ -124,6 +131,7 @@ export default class BlogComponent extends Component {
 
     postList = [];
     modalData = {title: '', body: '', showCancel: false, isError: false};
+
     
     render() {
         

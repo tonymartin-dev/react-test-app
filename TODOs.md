@@ -12,4 +12,4 @@
 5. Validations
     * Validate special data fields (email, phone, website, ¿password?)
 6. Blog
-    *Order posts by date
+    * *DONE:* Order posts by date
