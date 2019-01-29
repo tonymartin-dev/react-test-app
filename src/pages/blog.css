@@ -5,6 +5,7 @@
     align-items: stretch;
     justify-content: center;
     flex-wrap: wrap;
+    padding: 5px 25px;
 }
 
 .filter>*{

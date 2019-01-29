@@ -2,7 +2,7 @@ import React from 'react';
 import http         from '../services/http.svc';
 import ModalService from '../components/modal/modal.svc'
 
-class SigninComponent extends React.Component {
+class SignupComponent extends React.Component {
 
     constructor(props) {
         super(props);
@@ -79,7 +79,7 @@ class SigninComponent extends React.Component {
         console.log('Login');
 
         return (<div id="player">
-            <h1>Login</h1>
+            <h1>Sign Up</h1>
 
             <h5>Account data</h5>            
             <div className="input-group mb-3">
@@ -130,4 +130,4 @@ class SigninComponent extends React.Component {
     }
 }
 
-export default SigninComponent;
+export default SignupComponent;

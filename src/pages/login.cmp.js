@@ -66,7 +66,7 @@ class LoginComponent extends React.Component {
 
         var vm = this;        
 
-        return (<div id="player">
+        return (<div id="login" className="container">
             <h1>Login</h1>
             
             {this.props.msg ? (
@@ -91,9 +91,9 @@ class LoginComponent extends React.Component {
                 <div id="login-error">{vm.state.errorMessage}</div>
             ):(null)}
         
-            <div>
-                <input className="btn" type="submit" value="Log In" onClick={this.submit}/>
-                <Link to="/signin" className="btn">Sign In</Link>
+            <div className="btn-group">
+                <input className="btn btn-primary" type="submit" value="Log In" onClick={this.submit}/>
+                <Link to="/signup" className="btn btn-secondary">Sign Up</Link>
             </div>
 
         </div>)

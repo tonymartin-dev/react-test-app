@@ -39,7 +39,7 @@ function listPostsComponent(props){
 function saveCancelFooterTpl(props, post, editId) {
     return <div className="btn-group">
         <button className="edit-post btn btn-success" onClick={() => props.postAPI.save({ id: post._id, userId: post.userId }, editId)}> Save </button>
-        <button className="edit-post btn btn-secondary" onClick={() => props.postAPI.cancel(post._id, editId)}> Cancel </button>
+        <button className="edit-post btn btn-secondary" onClick={() => props.postAPI.cancelEdit(post._id, editId)}> Cancel </button>
     </div>;
 }
 

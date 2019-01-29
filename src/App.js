@@ -5,7 +5,7 @@ import { Route, Switch }    from 'react-router-dom';
 //Components
 import HeaderComponent      from './common/header.cmp'
 import LoginComponent       from './pages/login.cmp';
-import SigninComponent      from './pages/signin.cmp';
+import SignupComponent      from './pages/signup.cmp';
 import ProfileComponent     from './pages/profile.cmp'
 import BlogComponent        from './pages/blog.cmp'
 import FooterComponent      from './common/footer.cmp'
@@ -121,7 +121,7 @@ export default class App extends Component {
                     <div id="container">
                         <Switch>
                             <Route path="/" exact   render={ props=><LoginComponent logIn={logIn} loadUser={loadUser} status={vm.state.isLoggedIn} {...props} /> }/>
-                            <Route path="/signin"   logIn={logIn} component={ SigninComponent }/>
+                            <Route path="/signup"   logIn={logIn} component={ SignupComponent }/>
                             <Route render={ props => <LoginComponent logIn={logIn} loadUser={loadUser} status={vm.state.isLoggedIn} {...props} /> } />
                         </Switch>
                     </div>
