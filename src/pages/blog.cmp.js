@@ -3,6 +3,7 @@ import React, {Component} from 'react';
 //Components
 import SelectComponent      from '../components/select.cmp'
 import ListPostsComponent   from '../components/list-posts.cmp'
+import PostCreator      from '../components/post-creator.cmp'
 
 //Services
 import http             from '../services/http.svc';
@@ -311,6 +312,10 @@ export default class BlogComponent extends Component {
             }
         }
 
+        function closePostCreator(){
+            vm.setState({creatingPost: false});
+        }
+
         return <div id="Blog">
                         
             <h1>Bl-cmp</h1>
@@ -328,18 +333,7 @@ export default class BlogComponent extends Component {
 
             {/*CREATE POST*/}
             {vm.state.creatingPost ? (
-                <div id="new-post" className="posts-list">
-                    <h4>Create Post</h4>
-                    <input className="title-edit" id="new-post-title" placeholder="Title"></input>
-                    <textarea className="body-edit" id="new-post-body" placeholder="Message"></textarea>
-                    <div className="post-footer">
-                        <strong>Author: </strong> {vm.props.user.name}
-                        <div className="btn-group">
-                            <button className="btn btn-success" onClick={() => postAPI.create() }> Post </button>
-                            <button className="btn btn-secondary" onClick={() =>  vm.setState({creatingPost: false})}> Cancel </button>
-                        </div>
-                    </div>
-                </div>
+                <PostCreator postAPI={postAPI} closePostCreator={closePostCreator} {...vm.props}/>
             ):(null)}
             
             {/*POSTS LIST*/}
