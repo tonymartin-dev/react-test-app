@@ -1,6 +1,6 @@
 1. Modal service: 
-    * add component modal function
-    * add backdrop functionality
+    * *DONE:* add component modal function
+    * *DONE:* add backdrop functionality
 2. SingUp component:
     * *DONE:* add info edit functionality
     * *DONE:* "SingUp" and "return to login" buttons

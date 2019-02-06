@@ -3,7 +3,7 @@ import React, {Component} from 'react';
 //Components
 import SelectComponent      from '../components/select.cmp'
 import ListPostsComponent   from '../components/list-posts.cmp'
-import PostCreator      from '../components/post-creator.cmp'
+import PostCreator          from '../components/post-creator.cmp'
 
 //Services
 import http             from '../services/http.svc';
@@ -126,7 +126,7 @@ export default class BlogComponent extends Component {
 
         //Create a new modal instance.
         vm.modal = ModalService();
-        console.log('Modal instance', vm.modal)
+        console.log('Modal instance', vm.modal);
         
     } //End of constructor
 

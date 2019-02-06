@@ -1,6 +1,12 @@
-import React from 'react';
-import http   from '../services/http.svc';
+import React            from 'react';
 
+//Services
+import http             from '../services/http.svc';
+import validateSvc          from '../services/validate.svc';
+import ModalService     from '../components/modal/modal.svc'
+import LoaderService    from '../components/loader/loader.svc'
+
+//Local imports
 import './profile.css';
 
 class ProfileComponent extends React.Component {
@@ -14,12 +20,15 @@ class ProfileComponent extends React.Component {
             editProfile: false,
             savedUserData: {...this.props.user},
             userData: {...this.props.user}
-        }
+        };
+
+        //Create a new modal instance.
+        this.modal = ModalService();
+        console.log('Modal instance', this.modal);
        
         this.handleChange = this.handleChange.bind(this);
         this.submit = this.submit.bind(this);        
     }
-
 
     editProfile(){
         this.setState(prevState => {        //To use the previous state, we don't pass an object as argument of setState(). Instead, we use a function whose argument is the previous state
@@ -36,6 +45,16 @@ class ProfileComponent extends React.Component {
         this.setState({userData: userData});
     }
 
+    isInvalidData(data){
+
+        let invalidData = [];
+
+        if(!validateSvc.email(data.email)) invalidData.push('email');
+        if(!validateSvc.phone(data.phone)) invalidData.push('phone');
+
+        return invalidData.length > 0 ? invalidData : false;
+    }
+
     cancel(){
         this.setState({userData: {...this.state.savedUserData}});
         this.editProfile();
@@ -43,21 +62,39 @@ class ProfileComponent extends React.Component {
 
     submit(){
         var vm = this;
-        var config= {
-            method: 'PUT',
-            service: 'users',
-            body: vm.state.userData
-        }
-        http.request(config).then(
-            ()=>{
-                //vm.props.user = {...this.userData};
-                vm.setState({savedUserData: vm.state.userData});
-                vm.editProfile();
-            },
-            ()=>{
-                console.log('KO');
+        
+        let isInvalid = validateSvc.isInvalid(vm.state.userData);
+
+        if(isInvalid){
+
+            let invalidString = isInvalid.join(', ')
+            
+            var config ={
+                title:       'Invalid Format',
+                body:        'Check this fields: ' + invalidString,
+                isError:     true
             }
-        )
+            vm.modal.openSimpleModal(config);
+
+        } else {
+
+            var config= {
+                method: 'PUT',
+                service: 'users',
+                body: vm.state.userData
+            }
+
+            http.request(config).then(
+                ()=>{
+                    vm.setState({savedUserData: vm.state.userData});
+                    vm.editProfile();
+                },
+                ()=>{
+                    console.log('KO');
+                }
+            )
+
+        };
     }
      
     render(){
